@@ -9,12 +9,12 @@ import { get, push, ref, set } from "firebase/database";
 
 const Register = ({ user, setUser, loginUser }) => {
   const [form, setForm] = useState({
-    username: "Mentee",
-    email: "mentee@gmail.com",
+    username: "",
+    email: "",
     dateOfBirth: "",
-    role: "Mentee",
-    password: "mentee123",
-    confirmPassword: "mentee123",
+    role: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [alert, setAlert] = useState("");

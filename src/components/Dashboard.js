@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Goals from "./Goals";
 
-const Dashboard = ({ goals, setGoals }) => {
+const Dashboard = ({ goals, setGoals, loadGoals }) => {
   const navigate = useNavigate();
 
   const [meetings, setMeetings] = useState([
@@ -71,6 +71,8 @@ const Dashboard = ({ goals, setGoals }) => {
   const handleViewAllMeetingsClick = () => {
     navigate("/meetings");
   };
+
+  loadGoals();
 
   return (
     <Container

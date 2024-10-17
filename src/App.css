@@ -1,3 +1,23 @@
 .white-color {
-  color: "#FFFFFF";
+  color: "#FFFFFF" !important;
+}
+
+.primary-color {
+  color: #005457 !important;
+}
+
+.bg-primary {
+  background-color: #005457 !important;
+  color: white !important;
+}
+
+.login-image {
+  width: 500px;
+  height: 500px;
+}
+
+.login-card {
+  height: 400px;
+  min-width: 400px;
+  border: 1px solid #005457;
 }

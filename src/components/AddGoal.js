@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase/config";
+import { get, push, ref, set } from "firebase/database";
 
-const AddGoal = ({ user, setGoals }) => {
+const AddGoal = ({ user, setGoals, loadGoals }) => {
   const [goalTitle, setGoalTitle] = useState("");
   const [goalDescription, setGoalDescription] = useState("");
   const [mentorName, setMentorName] = useState(
-    user.role === "Mentor" ? user.name : ""
+    user.role === "Mentor" ? user.username : ""
   );
   const [menteeName, setMenteeName] = useState(
-    user.role === "Mentee" ? user.name : ""
+    user.role === "Mentee" ? user.username : ""
   );
   const [dateOfCreation, setDateOfCreation] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
@@ -17,7 +19,7 @@ const AddGoal = ({ user, setGoals }) => {
   const navigate = useNavigate();
 
   console.log(dateOfCreation);
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate inputs
@@ -35,7 +37,6 @@ const AddGoal = ({ user, setGoals }) => {
 
     // Create new goal object
     const newGoal = {
-      id: Math.floor(Math.random() * 10000), // Generate a unique ID (consider a better approach for production)
       title: goalTitle,
       description: goalDescription,
       mentor: mentorName,
@@ -44,23 +45,37 @@ const AddGoal = ({ user, setGoals }) => {
     };
 
     // Update goals state
-    setGoals((prevGoals) => [...prevGoals, newGoal]);
+    try {
+      const newDocRef = push(ref(db, "goals"));
+      await set(newDocRef, {
+        title: goalTitle,
+        description: goalDescription,
+        mentor: mentorName,
+        mentee: menteeName,
+        dateCreated: dateOfCreation,
+        userid: user.id
+      });
 
-    // Reset form
-    setGoalTitle("");
-    setGoalDescription("");
-    setMentorName("");
-    setMenteeName("");
-    setDateOfCreation("");
+      await loadGoals();
 
-    // Show success alert
-    setAlertMessage("Goal added successfully!");
-    setAlertType("success");
+      // Reset form
+      setGoalTitle("");
+      setGoalDescription("");
+      setMentorName("");
+      setMenteeName("");
+      setDateOfCreation("");
 
-    // Navigate back to goals page after a delay
-    setTimeout(() => {
-      navigate("/goals");
-    }, 2000);
+      // Show success alert
+      setAlertMessage("Goal added successfully!");
+      setAlertType("success");
+
+      // Navigate back to goals page after a delay
+      setTimeout(() => {
+        navigate("/goals");
+      }, 2000);
+    } catch (error) {
+      setAlertMessage("Add failed: " + error.message);
+    }
   };
 
   return (

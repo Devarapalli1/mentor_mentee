@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import { Navigate } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 
-const Login = ({ user, setUser }) => {
+const Login = ({ user, setUser, loginUser }) => {
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -25,7 +25,7 @@ const Login = ({ user, setUser }) => {
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const emptyTextRegex = /^\s*$/;
 
@@ -41,13 +41,12 @@ const Login = ({ user, setUser }) => {
       return;
     }
 
-    setUser({
-      ...user,
-      email: form.email,
-      password: form.password,
-    });
-    setAlert("");
-    setRedirect(true);
+    await loginUser(form.email, form.password);
+    if (user?.email && user?.id) {
+      setAlert("");
+      setRedirect(true);
+      console.log(user);
+    }
   };
 
   if (redirect) {

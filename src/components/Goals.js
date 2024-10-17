@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const Goals = ({ goals, setGoals, setCurrentGoal, renderViewAll = false }) => {
-  const navigate = useNavigate(); 
+const Goals = ({
+  goals,
+  setGoals,
+  setCurrentGoal,
+  loadGoals,
+  renderViewAll = false,
+}) => {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState(null);
 
@@ -12,20 +18,20 @@ const Goals = ({ goals, setGoals, setCurrentGoal, renderViewAll = false }) => {
   };
 
   const handleEditGoalClick = (goal) => {
-    navigate("/edit-goal", { state: { goal } }); 
+    navigate("/edit-goal", { state: { goal } });
   };
 
   const handleDeleteGoalClick = (goal) => {
-    setGoalToDelete(goal); 
-    setShowModal(true); 
+    setGoalToDelete(goal);
+    setShowModal(true);
   };
 
   const confirmDelete = () => {
     setGoals((prevGoals) =>
       prevGoals.filter((goal) => goal.id !== goalToDelete.id)
     );
-    setShowModal(false); 
-    setGoalToDelete(null); 
+    setShowModal(false);
+    setGoalToDelete(null);
   };
 
   const handleViewAllClick = () => {
@@ -35,16 +41,15 @@ const Goals = ({ goals, setGoals, setCurrentGoal, renderViewAll = false }) => {
   let classes = renderViewAll ? "dashboard-card" : "goal-card";
   classes += " mb-3";
 
+  loadGoals();
+
   return (
     <>
       <Card className={classes}>
         <Card.Header className="h6 bg-primary d-flex justify-content-between">
           <div className="fw-bold">Goals</div>
           {renderViewAll ? (
-            <div
-              className="cursor-pointer fs-6"
-              onClick={handleViewAllClick} 
-            >
+            <div className="cursor-pointer fs-6" onClick={handleViewAllClick}>
               View all {"->"}
             </div>
           ) : (

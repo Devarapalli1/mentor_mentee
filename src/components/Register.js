@@ -4,8 +4,10 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Navigate } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
+import { db } from "../firebase/config";
+import { get, push, ref, set } from "firebase/database";
 
-const Register = ({ user, setUser }) => {
+const Register = ({ user, setUser, loginUser }) => {
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -37,7 +39,7 @@ const Register = ({ user, setUser }) => {
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setAlert("");
 
@@ -72,15 +74,23 @@ const Register = ({ user, setUser }) => {
       return;
     }
 
-    setUser({
-      ...user,
-      username: form.username,
-      email: form.email,
-      dateOfBirth: form.dateOfBirth,
-      role: form.role,
-      password: form.password,
-    });
-    setRedirect(true);
+    try {
+      const newDocRef = push(ref(db, "users"));
+      await set(newDocRef, {
+        username: form.username,
+        email: form.email,
+        dateOfBirth: form.dateOfBirth,
+        role: form.role,
+        password: form.password,
+      });
+
+      await loginUser(form.email, form.password);
+      if (user?.email && user?.id) {
+        setRedirect(true);
+      }
+    } catch (error) {
+      setAlert("Registration failed: " + error.message);
+    }
   };
 
   if (redirect) {

@@ -11,6 +11,16 @@
   color: white !important;
 }
 
+.bg-secondary {
+  background-color: #00c4b4 !important;
+  color: white !important;
+}
+
+.bg-third {
+  background-color: white !important;
+  color: #005457 !important;
+}
+
 .login-image,
 .register-image {
   width: 500px;
@@ -22,5 +32,17 @@
   margin-top: 100px;
   height: 650px;
   min-width: 400px;
+  max-width: 600px;
   border: 1px solid #005457;
+}
+
+.dashboard-card {
+  min-height: 250px;
+  border: 0;
+  border-radius: 16px;
+}
+
+.goal-card {
+  height: 600px;
+  width: 600px;
 }

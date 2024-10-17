@@ -65,7 +65,7 @@ const Login = ({ user, setUser }) => {
 
           <br />
 
-          {alert && ( // Display a single alert message
+          {alert && (
             <Alert variant="danger" className="w-100 p-2">
               <i
                 className="fa-solid fa-triangle-exclamation me-2"

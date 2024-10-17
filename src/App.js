@@ -16,17 +16,20 @@ function App() {
     <Router>
       <Navbar user={user} />
       <Routes>
-        <Route path="/register" element={<Register user={user} />} />
+        <Route
+          path="/register"
+          element={<Register user={user} setUser={setUser} />}
+        />
 
         <Route
           path="/login"
-          element={<Login user={user} />}
+          element={<Login user={user} setUser={setUser} />}
         />
 
         <Route
           path="/"
           element={
-            <ProtectedRoute user={user} >
+            <ProtectedRoute user={user}>
               <Dashboard />
             </ProtectedRoute>
           }

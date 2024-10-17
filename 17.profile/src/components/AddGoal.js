@@ -35,15 +35,6 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
       return;
     }
 
-    // Create new goal object
-    const newGoal = {
-      title: goalTitle,
-      description: goalDescription,
-      mentor: mentorName,
-      mentee: menteeName,
-      dateCreated: dateOfCreation,
-    };
-
     // Update goals state
     try {
       const newDocRef = push(ref(db, "goals"));
@@ -53,7 +44,9 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
         mentor: mentorName,
         mentee: menteeName,
         dateCreated: dateOfCreation,
-        userid: user.id
+        userid: user.id,
+        completed: false,
+        progress: 0,
       });
 
       await loadGoals();

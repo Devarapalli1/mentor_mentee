@@ -1,88 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../firebase/config";
 import { get, push, ref, set } from "firebase/database";
 
-const AddGoal = ({ user, setGoals, loadGoals }) => {
-  const [goalTitle, setGoalTitle] = useState("");
-  const [goalDescription, setGoalDescription] = useState("");
-  const [mentorName, setMentorName] = useState(
-    user.role === "Mentor" ? user.username : ""
-  );
-  const [menteeName, setMenteeName] = useState(
-    user.role === "Mentee" ? user.username : ""
-  );
-  const [dateOfCreation, setDateOfCreation] = useState("");
+const EditGoal = ({ user, setGoals }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [goal, setGoal] = useState({
+    id: null,
+    title: "",
+    description: "",
+    mentor: "",
+    mentee: "",
+    dateCreated: "",
+    completed: false,
+    progress: 0,
+  });
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
-  const navigate = useNavigate();
 
-  console.log(dateOfCreation);
+  useEffect(() => {
+    const { goal } = location.state || {};
+    if (goal) {
+      setGoal(goal);
+    }
+  }, [location.state]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setGoal((prevGoal) => ({
+      ...prevGoal,
+      [name]: name === "dateCreated" ? value : value.trim(),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate inputs
     if (
-      !goalTitle ||
-      !goalDescription ||
-      !mentorName ||
-      !menteeName ||
-      !dateOfCreation
+      !goal.title ||
+      !goal.description ||
+      !goal.mentor ||
+      !goal.mentee ||
+      !goal.dateCreated
     ) {
       setAlertMessage("Please fill in all fields.");
       setAlertType("danger");
       return;
     }
 
-    // Create new goal object
-    const newGoal = {
-      title: goalTitle,
-      description: goalDescription,
-      mentor: mentorName,
-      mentee: menteeName,
-      dateCreated: dateOfCreation,
-    };
+    const newDocRef = ref(db, "goals/" + goal.id);
+    await set(newDocRef, {
+      title: goal.title,
+      description: goal.description,
+      mentor: goal.mentor,
+      mentee: goal.mentee,
+      dateCreated: goal.dateCreated,
+      userid: user.id,
+    });
 
-    // Update goals state
-    try {
-      const newDocRef = push(ref(db, "goals"));
-      await set(newDocRef, {
-        title: goalTitle,
-        description: goalDescription,
-        mentor: mentorName,
-        mentee: menteeName,
-        dateCreated: dateOfCreation,
-        userid: user.id
-      });
+    setGoals((prevGoals) =>
+      prevGoals.map((g) => (g.id === goal.id ? { ...g, ...goal } : g))
+    );
 
-      await loadGoals();
+    setAlertMessage("Goal updated successfully!");
+    setAlertType("success");
 
-      // Reset form
-      setGoalTitle("");
-      setGoalDescription("");
-      setMentorName("");
-      setMenteeName("");
-      setDateOfCreation("");
-
-      // Show success alert
-      setAlertMessage("Goal added successfully!");
-      setAlertType("success");
-
-      // Navigate back to goals page after a delay
-      setTimeout(() => {
-        navigate("/goals");
-      }, 2000);
-    } catch (error) {
-      setAlertMessage("Add failed: " + error.message);
-    }
+    setTimeout(() => navigate("/goals"), 2000);
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <Card style={{ width: "400px" }}>
         <Card.Header className="bg-primary text-white text-center">
-          New Goal
+          Edit Goal
         </Card.Header>
         <Card.Body>
           {alertMessage && (
@@ -99,8 +92,9 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
               <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
-                value={goalTitle}
-                onChange={(e) => setGoalTitle(e.target.value)}
+                name="title"
+                value={goal.title}
+                onChange={handleInputChange}
                 required
               />
             </Form.Group>
@@ -110,8 +104,9 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
               <Form.Control
                 as="textarea"
                 rows={3}
-                value={goalDescription}
-                onChange={(e) => setGoalDescription(e.target.value)}
+                name="description"
+                value={goal.description}
+                onChange={handleInputChange}
                 required
               />
             </Form.Group>
@@ -120,8 +115,9 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
               <Form.Label>Mentor Name</Form.Label>
               <Form.Control
                 type="text"
-                value={mentorName}
-                onChange={(e) => setMentorName(e.target.value)}
+                name="mentor"
+                value={goal.mentor}
+                onChange={handleInputChange}
                 required
                 disabled={user.role === "Mentor"}
               />
@@ -131,8 +127,9 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
               <Form.Label>Mentee Name</Form.Label>
               <Form.Control
                 type="text"
-                value={menteeName}
-                onChange={(e) => setMenteeName(e.target.value)}
+                name="mentee"
+                value={goal.mentee}
+                onChange={handleInputChange}
                 required
                 disabled={user.role === "Mentee"}
               />
@@ -142,8 +139,9 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
               <Form.Label>Date of Creation</Form.Label>
               <Form.Control
                 type="date"
-                value={dateOfCreation}
-                onChange={(e) => setDateOfCreation(e.target.value)}
+                name="dateCreated"
+                value={goal.dateCreated}
+                onChange={handleInputChange}
                 required
               />
             </Form.Group>
@@ -154,7 +152,7 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
                 className="bg-primary mt-3 w-50 border-0"
                 type="submit"
               >
-                Submit
+                Update Goal
               </Button>
             </div>
           </Form>
@@ -164,4 +162,4 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
   );
 };
 
-export default AddGoal;
+export default EditGoal;

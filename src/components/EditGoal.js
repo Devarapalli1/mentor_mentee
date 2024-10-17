@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
+import { db } from "../firebase/config";
+import { get, push, ref, set } from "firebase/database";
 
 const EditGoal = ({ user, setGoals }) => {
   const navigate = useNavigate();
@@ -32,7 +34,7 @@ const EditGoal = ({ user, setGoals }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -46,6 +48,16 @@ const EditGoal = ({ user, setGoals }) => {
       setAlertType("danger");
       return;
     }
+
+    const newDocRef = ref(db, "goals/" + goal.id);
+    await set(newDocRef, {
+      title: goal.title,
+      description: goal.description,
+      mentor: goal.mentor,
+      mentee: goal.mentee,
+      dateCreated: goal.dateCreated,
+      userid: user.id,
+    });
 
     setGoals((prevGoals) =>
       prevGoals.map((g) => (g.id === goal.id ? { ...g, ...goal } : g))

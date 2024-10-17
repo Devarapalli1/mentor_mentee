@@ -10,7 +10,7 @@ const Register = ({ user, setUser }) => {
     username: "",
     email: "",
     dateOfBirth: "",
-    role: "", // Initialize role as an empty string
+    role: "",
     password: "",
     confirmPassword: "",
   });
@@ -18,8 +18,8 @@ const Register = ({ user, setUser }) => {
   const [alert, setAlert] = useState("");
   const [redirect, setRedirect] = useState(false);
 
-  if (user?.name) {
-    return <Navigate to="/login" />;
+  if (user?.email) {
+    return <Navigate to="/" />;
   }
 
   const onChange = (e) => {
@@ -31,7 +31,6 @@ const Register = ({ user, setUser }) => {
   };
 
   const onRoleChange = (e) => {
-    // Set the role based on the selected radio button value
     setForm((prev) => ({
       ...prev,
       role: e.target.value,
@@ -39,10 +38,9 @@ const Register = ({ user, setUser }) => {
   };
 
   const onSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     setAlert("");
 
-    // Validation
     if (!form.username.trim()) {
       setAlert("Please enter a User Name");
       return;
@@ -74,7 +72,6 @@ const Register = ({ user, setUser }) => {
       return;
     }
 
-    // Set user information
     setUser({
       ...user,
       username: form.username,
@@ -92,8 +89,6 @@ const Register = ({ user, setUser }) => {
 
   return (
     <Form onSubmit={onSubmit}>
-      {" "}
-      {/* Use onSubmit handler */}
       <div className="d-flex justify-content-around align-items-center vw-100 vh-100 register pt-5">
         <div>
           <img
@@ -107,7 +102,7 @@ const Register = ({ user, setUser }) => {
 
           <br />
 
-          {alert && ( // Display a single alert message
+          {alert && (
             <Alert variant="danger" className="w-100 p-2">
               <i
                 className="fa-solid fa-triangle-exclamation me-2"
@@ -155,20 +150,20 @@ const Register = ({ user, setUser }) => {
               type="radio"
               id="Mentor"
               name="role"
-              value="Mentor" // Set the value to "Mentor"
-              checked={form.role === "Mentor"} // Check if this role is selected
-              onChange={onRoleChange} // Use onChange to update role
-              label="Mentor" // Label for the radio button
+              value="Mentor"
+              checked={form.role === "Mentor"}
+              onChange={onRoleChange}
+              label="Mentor"
             />
 
             <Form.Check
               type="radio"
               id="Mentee"
               name="role"
-              value="Mentee" // Set the value to "Mentee"
-              checked={form.role === "Mentee"} // Check if this role is selected
-              onChange={onRoleChange} // Use onChange to update role
-              label="Mentee" // Label for the radio button
+              value="Mentee"
+              checked={form.role === "Mentee"}
+              onChange={onRoleChange}
+              label="Mentee"
             />
           </div>
 
@@ -199,7 +194,7 @@ const Register = ({ user, setUser }) => {
           <Button
             variant="primary"
             className="bg-primary border-0 w-50"
-            type="submit" // Use type="submit"
+            type="submit"
           >
             Signup
           </Button>

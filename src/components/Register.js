@@ -2,11 +2,16 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import { Navigate } from "react-router-dom";
 
-const Register = () => {
+const Register = (user, setUser) => {
+  if (user?.name) {
+    <Navigate to="/login" />;
+  }
+
   return (
     <Form>
-      <div className="d-flex justify-content-around align-items-center vw-100 vh-100 register">
+      <div className="d-flex justify-content-around align-items-center vw-100 vh-100 register pt-5">
         <div>
           <img
             src="img/Register.png"

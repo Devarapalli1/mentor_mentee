@@ -11,13 +11,19 @@
   color: white !important;
 }
 
-.login-image {
+.login-image,
+.register-image {
   width: 500px;
   height: 500px;
 }
 
-.login-card {
+.login-card,
+.register-card {
   height: 400px;
   min-width: 400px;
   border: 1px solid #005457;
+}
+
+.register-card {
+  height: 650px;
 }

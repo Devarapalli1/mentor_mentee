@@ -10,6 +10,7 @@ import "./App.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./components/Login";
+import Register from "./components/Register";
 
 const router = createBrowserRouter([
   {
@@ -27,7 +28,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RegisterNavbar />,
+    element: (
+      <Fragment>
+        <RegisterNavbar />
+        <Register />
+      </Fragment>
+    ),
   },
 ]);
 

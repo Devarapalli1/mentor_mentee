@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Card, Badge, Row, Col } from "react-bootstrap";
+import { Card, Badge, Row, Col, Button } from "react-bootstrap";
 import Goals from "./Goals";
 import GoalsChart from "./GoalsChart";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase/config";
-import { get, ref } from "firebase/database";
+import { get, push, ref, set } from "firebase/database";
 
 const Profile = ({ currUser }) => {
   const { id } = useParams(); // Extract user ID from the URL
   const [user, setUser] = useState(null); // State to store user data
   const [goals, setGoals] = useState([]);
+
+  const [connections, setConnections] = useState([]);
+  const [connection, setConnection] = useState({ status: "pending" });
 
   const fetchUserData = async () => {
     try {
@@ -55,18 +58,69 @@ const Profile = ({ currUser }) => {
     }
   };
 
+  const loadConnections = async (currUser, user) => {
+    const dbRef = ref(db, "connections");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const connections = snapshot.val();
+
+      const tempConnections = Object.keys(connections).map((id) => {
+        return {
+          ...connections[id],
+          id,
+        };
+      });
+
+      setConnections(tempConnections);
+
+      const tempFilteredConnections = tempConnections.filter((connection) => {
+        return (
+          connection.mentor ===
+            (currUser.role === "Mentor" ? currUser.id : user.id) &&
+          connection.mentee ===
+            (currUser.role === "Mentee" ? currUser.id : user.id)
+        );
+      });
+
+      if (tempFilteredConnections.length > 0) {
+        setConnection(
+          tempFilteredConnections[tempFilteredConnections.length - 1]
+        );
+      } else {
+        setConnection({ status: "rejected" });
+      }
+    } else {
+      setConnection({ status: "rejected" });
+    }
+  };
+
+  const sendRequest = async (currUser, user) => {
+    try {
+      const newDocRef = push(ref(db, "connections"));
+      await set(newDocRef, {
+        mentor: currUser.role === "Mentor" ? currUser.id : user.id,
+        mentee: currUser.role === "Mentee" ? currUser.id : user.id,
+        status: "pending",
+      });
+      setConnection({ ...connection, status: "pending" });
+    } catch (error) {
+      console.error("Error sending connection request: ", error);
+    }
+  };
+
   // Fetch user data from Firebase based on user ID
   useEffect(() => {
-    async function fetchData() {
-      await fetchUserData(); // Call the fetch function when the component mounts
-    }
-
-    fetchData();
+    fetchUserData();
   }, [id]);
 
   useEffect(() => {
-    if (user?.id !== null) {
-      loadGoals();
+    const loadAll = async () => {
+      await loadGoals();
+      await loadConnections(currUser, user);
+    };
+
+    if (user?.id !== null && user?.id !== undefined) {
+      loadAll();
     }
   }, [user]);
 
@@ -100,6 +154,29 @@ const Profile = ({ currUser }) => {
             <h4>
               {user.username}
               <span className="fw-normal h6 ms-5">{user.rating} ⭐</span>
+
+              <span className="ms-5">
+                {currUser.id !== user.id &&
+                  (connection.status === "rejected" ? (
+                    <Button
+                      onClick={() => {
+                        sendRequest(currUser, user);
+                      }}
+                      className="ms-4"
+                      variant="success"
+                    >
+                      <i class="fa-solid fa-user-plus"></i>
+                    </Button>
+                  ) : connection.status === "pending" ? (
+                    <Button className="ms-4" variant="warning">
+                      <i class="fa-solid fa-person-circle-exclamation"></i>
+                    </Button>
+                  ) : (
+                    <Button className="ms-4" variant="success">
+                      <i class="fa-solid fa-user-group"></i> Friends
+                    </Button>
+                  ))}
+              </span>
             </h4>
 
             <p>
@@ -112,6 +189,7 @@ const Profile = ({ currUser }) => {
                 ))}
             </p>
           </div>
+
           <span>{user.connections ? user.connections : 0}+ Connections</span>
         </div>
       </Card>

@@ -56,7 +56,6 @@ function App() {
   const [goals, setGoals] = useState([]);
 
   const loadGoals = async () => {
-    console.log("LOAD GAOLS");
     const dbRef = ref(db, "goals");
     const snapshot = await get(dbRef);
     if (snapshot.exists()) {

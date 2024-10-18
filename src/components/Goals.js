@@ -106,6 +106,7 @@ const Goals = ({
                 )}
               </div>
             ))}
+          {goals.length === 0 && "No Goals available."}
         </Card.Body>
       </Card>
 

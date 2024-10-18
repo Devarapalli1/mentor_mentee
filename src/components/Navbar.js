@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { useLocation, Link } from "react-router-dom"; // Import Link
+import { db } from "../firebase/config";
+import { get, push, ref, set } from "firebase/database";
 
 const NavBar = ({ user }) => {
   const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);
   };
@@ -15,6 +20,36 @@ const NavBar = ({ user }) => {
   const handleViewProfile = () => {
     setDropdownVisible(false);
   };
+
+  const handleSearch = async (query) => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    const dbRef = ref(db, "users");
+    const snapshot = await get(dbRef);
+
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      const tempUsers = Object.keys(users)
+        .map((id) => ({ ...users[id], id }))
+        .filter(
+          (u) =>
+            u.role !== user.role &&
+            u.username.toLowerCase().includes(query.toLowerCase())
+        );
+      setSearchResults(tempUsers);
+    }
+  };
+
+  const closeSearchResults = () => {
+    setSearchQuery("");
+  };
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery]);
 
   return (
     <Navbar
@@ -24,8 +59,6 @@ const NavBar = ({ user }) => {
     >
       <Container fluid>
         <Navbar.Brand as={Link} to="/" className="w-50">
-          {" "}
-          {/* Use Link for navigation */}
           <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
         </Navbar.Brand>
 
@@ -34,12 +67,19 @@ const NavBar = ({ user }) => {
             <>
               <Navbar.Toggle aria-controls="navbarScroll" />
               <Navbar.Collapse id="navbarScroll" className="w-75">
-                <Form className="d-flex me-auto mt-4 mt-md-0">
+                <Form
+                  className="d-flex me-auto mt-4 mt-md-0"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
+                >
                   <Form.Control
                     type="search"
                     placeholder="Enter username"
                     className="me-auto rounded-pill"
                     aria-label="Enter username"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <div className="d-flex justify-content-center align-items-center ms-2">
                     <i
@@ -48,6 +88,27 @@ const NavBar = ({ user }) => {
                     ></i>
                   </div>
                 </Form>
+
+                {searchResults.length > 0 && (
+                  <div
+                    className="position-absolute search-result-div bg-light"
+                    style={{ zIndex: 1000 }}
+                  >
+                    {searchResults.map((result) => (
+                      <div key={result.id} className="p-2 border-bottom">
+                        <span>{result.username}</span>
+                        <Link
+                          to={`/profile/${result.id}`}
+                          onClick={closeSearchResults}
+                          className="btn btn-link"
+                        >
+                          <i class="fa-solid fa-eye"></i>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <Nav className="me-2 my-2 my-lg-0" navbarScroll>
                   <Nav.Link
                     as={Link}

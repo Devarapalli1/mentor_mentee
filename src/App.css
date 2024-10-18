@@ -52,6 +52,12 @@
   max-width: 100%;
 }
 
+.search-result-div {
+  top: 50px;
+  border-radius: 8px;
+  margin-left: 5px;
+}
+
 .profile {
   width: 100vw;
   border-radius: 0;

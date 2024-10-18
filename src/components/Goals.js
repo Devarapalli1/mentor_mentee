@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase/config";
+import { get, push, ref, set, remove } from "firebase/database";
 
 const Goals = ({
   goals,
@@ -26,12 +28,17 @@ const Goals = ({
     setShowModal(true);
   };
 
-  const confirmDelete = () => {
-    setGoals((prevGoals) =>
-      prevGoals.filter((goal) => goal.id !== goalToDelete.id)
-    );
-    setShowModal(false);
-    setGoalToDelete(null);
+  const confirmDelete = async () => {
+    if (goalToDelete) {
+      const dbRef = ref(db, "goals/" + goalToDelete.id);
+      await remove(dbRef);
+
+      setGoals((prevGoals) =>
+        prevGoals.filter((currgoal) => currgoal.id !== goalToDelete.id)
+      );
+      setShowModal(false);
+      setGoalToDelete(null);
+    }
   };
 
   const handleViewAllClick = () => {

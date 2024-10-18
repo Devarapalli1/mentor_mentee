@@ -1,16 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom"; // Import Link
+import { db } from "../firebase/config";
+import { get, push, ref, set } from "firebase/database";
 
 const NavBar = ({ user }) => {
   const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);
   };
+
+  const handleViewProfile = () => {
+    setDropdownVisible(false);
+  };
+
+  const handleSearch = async (query) => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    const dbRef = ref(db, "users");
+    const snapshot = await get(dbRef);
+
+    if (snapshot.exists()) {
+      const users = snapshot.val();
+      const tempUsers = Object.keys(users)
+        .map((id) => ({ ...users[id], id }))
+        .filter(
+          (u) =>
+            u.role !== user.role &&
+            u.username.toLowerCase().includes(query.toLowerCase())
+        );
+      setSearchResults(tempUsers);
+    }
+  };
+
+  const closeSearchResults = () => {
+    setSearchQuery("");
+  };
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery]);
 
   return (
     <Navbar
@@ -19,8 +58,8 @@ const NavBar = ({ user }) => {
       style={{ backgroundColor: "#005457" }}
     >
       <Container fluid>
-        <Navbar.Brand href="/" className="w-50">
-          <img src="logo.png" alt="Logo" style={{ width: "120px" }} />
+        <Navbar.Brand as={Link} to="/" className="w-50">
+          <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
         </Navbar.Brand>
 
         {location.pathname !== "/login" &&
@@ -28,12 +67,19 @@ const NavBar = ({ user }) => {
             <>
               <Navbar.Toggle aria-controls="navbarScroll" />
               <Navbar.Collapse id="navbarScroll" className="w-75">
-                <Form className="d-flex me-auto mt-4 mt-md-0">
+                <Form
+                  className="d-flex me-auto mt-4 mt-md-0"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
+                >
                   <Form.Control
                     type="search"
                     placeholder="Enter username"
                     className="me-auto rounded-pill"
                     aria-label="Enter username"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                   <div className="d-flex justify-content-center align-items-center ms-2">
                     <i
@@ -42,9 +88,31 @@ const NavBar = ({ user }) => {
                     ></i>
                   </div>
                 </Form>
+
+                {searchResults.length > 0 && (
+                  <div
+                    className="position-absolute search-result-div bg-light"
+                    style={{ zIndex: 1000 }}
+                  >
+                    {searchResults.map((result) => (
+                      <div key={result.id} className="p-2 border-bottom">
+                        <span>{result.username}</span>
+                        <Link
+                          to={`/profile/${result.id}`}
+                          onClick={closeSearchResults}
+                          className="btn btn-link"
+                        >
+                          <i class="fa-solid fa-eye"></i>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <Nav className="me-2 my-2 my-lg-0" navbarScroll>
                   <Nav.Link
-                    href="/goals"
+                    as={Link}
+                    to="/goals" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -54,7 +122,8 @@ const NavBar = ({ user }) => {
                     <i className="fa-solid fa-bullseye ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
-                    href="/notifications"
+                    as={Link}
+                    to="/notifications" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -66,7 +135,8 @@ const NavBar = ({ user }) => {
                     <i className="fa-regular fa-bell ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
-                    href="/connections"
+                    as={Link}
+                    to="/connections" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -78,7 +148,8 @@ const NavBar = ({ user }) => {
                     <i className="fa-solid fa-link ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
-                    href="/forum"
+                    as={Link}
+                    to="/forum" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -87,10 +158,6 @@ const NavBar = ({ user }) => {
                     )}
                     <i className="fa-solid fa-users ms-2"></i>
                   </Nav.Link>
-                  <Nav.Link
-                    href="/forum"
-                    style={{ color: "#FFFFFF" }}
-                  ></Nav.Link>
                   <div className="position-relative">
                     <Nav.Link
                       style={{ color: "#FFFFFF", cursor: "pointer" }}
@@ -109,12 +176,21 @@ const NavBar = ({ user }) => {
                           width: "200px",
                         }}
                       >
-                        <Nav.Link href="/profile" style={{ color: "#000" }}>
+                        <Nav.Link
+                          as={Link}
+                          to={`/profile/${user.id}`}
+                          style={{ color: "#000" }}
+                          onClick={handleViewProfile}
+                        >
                           View Profile
                         </Nav.Link>
-                        <Nav.Link href="/logout" style={{ color: "#000" }}>
-                          Logout{" "}
-                          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <Nav.Link
+                          as={Link}
+                          to="/logout"
+                          style={{ color: "#000" }}
+                        >
+                          Logout
+                          <i className="fa-solid fa-arrow-right-from-bracket"></i>
                         </Nav.Link>
                       </div>
                     )}
@@ -126,7 +202,7 @@ const NavBar = ({ user }) => {
 
         {location.pathname === "/login" && (
           <Nav className="me-2 my-2 my-lg-0" navbarScroll>
-            <Nav.Link href="/register" style={{ color: "#FFFFFF" }}>
+            <Nav.Link as={Link} to="/register" style={{ color: "#FFFFFF" }}>
               Register <i className="fa-solid fa-right-to-bracket"></i>
             </Nav.Link>
           </Nav>
@@ -134,7 +210,7 @@ const NavBar = ({ user }) => {
 
         {location.pathname === "/register" && (
           <Nav className="me-2 my-2 my-lg-0" navbarScroll>
-            <Nav.Link href="/login" style={{ color: "#FFFFFF" }}>
+            <Nav.Link as={Link} to="/login" style={{ color: "#FFFFFF" }}>
               Login <i className="fa-solid fa-right-to-bracket"></i>
             </Nav.Link>
           </Nav>

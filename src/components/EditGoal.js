@@ -15,6 +15,8 @@ const EditGoal = ({ user, setGoals }) => {
     mentor: "",
     mentee: "",
     dateCreated: "",
+    completed: false,
+    progress: 0,
   });
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");

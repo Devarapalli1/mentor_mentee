@@ -10,6 +10,7 @@ import Dashboard from "./components/Dashboard";
 import Goals from "./components/Goals";
 import AddGoal from "./components/AddGoal";
 import EditGoal from "./components/EditGoal";
+import Profile from "./components/Profile";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -18,11 +19,12 @@ import { ref, get } from "firebase/database";
 
 function App() {
   const [user, setUser] = useState({
-    id: "-O9LR5XUZcX-elSGpYno",
-    username: "Mentor",
-    email: "mentor@gmail.com",
-    role: "Mentor",
     dateOfBirth: "2000-01-01",
+    email: "mentor@gmail.com",
+    password: "mentor123",
+    role: "Mentor",
+    username: "Mentor",
+    id: "-O9LR5XUZcX-elSGpYno",
   });
 
   const loginUser = async (email, password) => {
@@ -43,13 +45,8 @@ function App() {
         });
 
       if (tempUsers.length === 1) {
-        setUser({
-          id: tempUsers[0].id,
-          username: tempUsers[0].username,
-          email: tempUsers[0].email,
-          role: tempUsers[0].role,
-          dateOfBirth: tempUsers[0].dateOfBirth,
-        });
+        setUser(tempUsers[0]);
+        console.log(tempUsers[0]);
       }
     } else {
       setUser({});
@@ -154,6 +151,17 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
                 <EditGoal user={user} setGoals={setGoals} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile/:id"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 pt-5 goals">
+                <Profile currUser={user} />
               </div>
             </ProtectedRoute>
           }

@@ -82,6 +82,9 @@ const Register = ({ user, setUser, loginUser }) => {
         dateOfBirth: form.dateOfBirth,
         role: form.role,
         password: form.password,
+        rating: 5,
+        connections: 0,
+        skills: "",
       });
 
       await loginUser(form.email, form.password);

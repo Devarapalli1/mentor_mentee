@@ -3,13 +3,17 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom"; // Import Link
 
 const NavBar = ({ user }) => {
   const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);
+  };
+
+  const handleViewProfile = () => {
+    setDropdownVisible(false);
   };
 
   return (
@@ -19,8 +23,10 @@ const NavBar = ({ user }) => {
       style={{ backgroundColor: "#005457" }}
     >
       <Container fluid>
-        <Navbar.Brand href="/" className="w-50">
-          <img src="logo.png" alt="Logo" style={{ width: "120px" }} />
+        <Navbar.Brand as={Link} to="/" className="w-50">
+          {" "}
+          {/* Use Link for navigation */}
+          <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
         </Navbar.Brand>
 
         {location.pathname !== "/login" &&
@@ -44,7 +50,8 @@ const NavBar = ({ user }) => {
                 </Form>
                 <Nav className="me-2 my-2 my-lg-0" navbarScroll>
                   <Nav.Link
-                    href="/goals"
+                    as={Link}
+                    to="/goals" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -54,7 +61,8 @@ const NavBar = ({ user }) => {
                     <i className="fa-solid fa-bullseye ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
-                    href="/notifications"
+                    as={Link}
+                    to="/notifications" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -66,7 +74,8 @@ const NavBar = ({ user }) => {
                     <i className="fa-regular fa-bell ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
-                    href="/connections"
+                    as={Link}
+                    to="/connections" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -78,7 +87,8 @@ const NavBar = ({ user }) => {
                     <i className="fa-solid fa-link ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
-                    href="/forum"
+                    as={Link}
+                    to="/forum" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
                   >
@@ -87,10 +97,6 @@ const NavBar = ({ user }) => {
                     )}
                     <i className="fa-solid fa-users ms-2"></i>
                   </Nav.Link>
-                  <Nav.Link
-                    href="/forum"
-                    style={{ color: "#FFFFFF" }}
-                  ></Nav.Link>
                   <div className="position-relative">
                     <Nav.Link
                       style={{ color: "#FFFFFF", cursor: "pointer" }}
@@ -109,12 +115,21 @@ const NavBar = ({ user }) => {
                           width: "200px",
                         }}
                       >
-                        <Nav.Link href="/profile" style={{ color: "#000" }}>
+                        <Nav.Link
+                          as={Link}
+                          to={`/profile/${user.id}`}
+                          style={{ color: "#000" }}
+                          onClick={handleViewProfile}
+                        >
                           View Profile
                         </Nav.Link>
-                        <Nav.Link href="/logout" style={{ color: "#000" }}>
-                          Logout{" "}
-                          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <Nav.Link
+                          as={Link}
+                          to="/logout"
+                          style={{ color: "#000" }}
+                        >
+                          Logout
+                          <i className="fa-solid fa-arrow-right-from-bracket"></i>
                         </Nav.Link>
                       </div>
                     )}
@@ -126,7 +141,7 @@ const NavBar = ({ user }) => {
 
         {location.pathname === "/login" && (
           <Nav className="me-2 my-2 my-lg-0" navbarScroll>
-            <Nav.Link href="/register" style={{ color: "#FFFFFF" }}>
+            <Nav.Link as={Link} to="/register" style={{ color: "#FFFFFF" }}>
               Register <i className="fa-solid fa-right-to-bracket"></i>
             </Nav.Link>
           </Nav>
@@ -134,7 +149,7 @@ const NavBar = ({ user }) => {
 
         {location.pathname === "/register" && (
           <Nav className="me-2 my-2 my-lg-0" navbarScroll>
-            <Nav.Link href="/login" style={{ color: "#FFFFFF" }}>
+            <Nav.Link as={Link} to="/login" style={{ color: "#FFFFFF" }}>
               Login <i className="fa-solid fa-right-to-bracket"></i>
             </Nav.Link>
           </Nav>

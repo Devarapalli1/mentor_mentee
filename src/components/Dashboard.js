@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Goals from "./Goals";
+import GoalsChart from "./GoalsChart";
 
 const Dashboard = ({ goals, setGoals, loadGoals }) => {
   const navigate = useNavigate();
@@ -72,8 +73,6 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
     navigate("/meetings");
   };
 
-  loadGoals();
-
   return (
     <Container
       fluid
@@ -83,7 +82,12 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
         <Col md={12}>
           <Row>
             <Col md={6}>
-              <Goals goals={goals} renderViewAll={true} />
+              <Goals
+                goals={goals}
+                setGoals={setGoals}
+                loadGoals={loadGoals}
+                renderViewAll={true}
+              />
             </Col>
 
             <Col md={6}>
@@ -93,15 +97,7 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
                 </Card.Header>
                 <Card.Body className="bg-secondary">
                   <div className="text-center">
-                    <div
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        margin: "auto",
-                      }}
-                    ></div>
-                    <p>In Progress: 35%</p>
-                    <p>Completed: 65%</p>
+                    <GoalsChart goals={goals} />
                   </div>
                 </Card.Body>
               </Card>

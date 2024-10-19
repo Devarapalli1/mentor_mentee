@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
@@ -7,16 +6,10 @@ import Navbar from "react-bootstrap/Navbar";
 import { useLocation, Link } from "react-router-dom"; // Import Link
 import { db } from "../firebase/config";
 import { get, push, ref, set } from "firebase/database";
-import { useLocation, Link } from "react-router-dom"; // Import Link
-import { db } from "../firebase/config";
-import { get, push, ref, set } from "firebase/database";
 
 const NavBar = ({ user }) => {
   const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 

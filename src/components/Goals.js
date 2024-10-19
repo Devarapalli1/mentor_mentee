@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import React, { useEffect, useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebase/config";
-import { get, push, ref, set, remove } from "firebase/database";
 import { db } from "../firebase/config";
 import { get, push, ref, set, remove } from "firebase/database";
 

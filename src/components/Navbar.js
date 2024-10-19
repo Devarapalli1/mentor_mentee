@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
@@ -6,10 +7,16 @@ import Navbar from "react-bootstrap/Navbar";
 import { useLocation, Link } from "react-router-dom"; // Import Link
 import { db } from "../firebase/config";
 import { get, push, ref, set } from "firebase/database";
+import { useLocation, Link } from "react-router-dom"; // Import Link
+import { db } from "../firebase/config";
+import { get, push, ref, set } from "firebase/database";
 
 const NavBar = ({ user }) => {
   const location = useLocation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -37,7 +44,8 @@ const NavBar = ({ user }) => {
         .filter(
           (u) =>
             u.role !== user.role &&
-            u.username.toLowerCase().includes(query.toLowerCase())
+            (u?.username?.toLowerCase().includes(query?.toLowerCase()) ||
+              u?.skills?.toLowerCase().includes(query?.toLowerCase()))
         );
       setSearchResults(tempUsers);
     }
@@ -75,9 +83,17 @@ const NavBar = ({ user }) => {
                 >
                   <Form.Control
                     type="search"
-                    placeholder="Enter username"
+                    placeholder={
+                      user.role === "Mentor"
+                        ? "Search for Mentees"
+                        : "Search for Mentors with name or skill"
+                    }
                     className="me-auto rounded-pill"
-                    aria-label="Enter username"
+                    aria-label={
+                      user.role === "Mentor"
+                        ? "Search for Mentees"
+                        : "Search for Mentors with name or skill"
+                    }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />

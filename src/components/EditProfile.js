@@ -1,28 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import { db } from "../firebase/config";
-import { get, push, ref, set } from "firebase/database";
+import { get, ref, update } from "firebase/database";
 
-const Register = ({ user, setUser, loginUser }) => {
+const EditProfile = ({ user, setUser }) => {
+  const { id } = useParams(); // Get user ID from the URL
   const [form, setForm] = useState({
     username: "",
     email: "",
     dateOfBirth: "",
     role: "",
-    password: "",
-    confirmPassword: "",
+    skills: "", // Add skills to form state
   });
-
   const [alert, setAlert] = useState("");
   const [redirect, setRedirect] = useState(false);
 
-  if (user?.email) {
-    return <Navigate to="/" />;
-  }
+  useEffect(() => {
+    // Load current user data to pre-fill the form
+    const loadUserData = async () => {
+      try {
+        const userRef = ref(db, `users/${id}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          setForm({
+            username: userData.username,
+            email: userData.email,
+            dateOfBirth: userData.dateOfBirth,
+            role: userData.role,
+            skills: userData.skills || "", // Initialize skills
+          });
+        } else {
+          setAlert("User data not found");
+        }
+      } catch (error) {
+        setAlert("Error fetching user data: " + error.message);
+      }
+    };
+
+    loadUserData();
+  }, [id]);
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -64,53 +85,49 @@ const Register = ({ user, setUser, loginUser }) => {
       return;
     }
 
-    if (form.password.length < 6) {
-      setAlert("Password must be at least 6 characters long");
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setAlert("Passwords do not match");
+    if (!form.skills.trim()) {
+      // Validate skills
+      setAlert("Please enter your Skills (mandatory)");
       return;
     }
 
     try {
-      const newDocRef = push(ref(db, "users"));
-      await set(newDocRef, {
+      const userRef = ref(db, `users/${id}`);
+      await update(userRef, {
         username: form.username,
         email: form.email,
         dateOfBirth: form.dateOfBirth,
         role: form.role,
-        password: form.password,
-        rating: 5,
-        connections: 0,
+        skills: form.skills, // Save skills as an array
       });
 
-      await loginUser(form.email, form.password);
-      if (user?.email && user?.id) {
-        setRedirect(true);
+      // Update current user state
+      if (user?.id === id) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          username: form.username,
+          email: form.email,
+          dateOfBirth: form.dateOfBirth,
+          role: form.role,
+          skills: form.skills, // Update skills in user state
+        }));
       }
+
+      setRedirect(true);
     } catch (error) {
-      setAlert("Registration failed: " + error.message);
+      setAlert("Update failed: " + error.message);
     }
   };
 
   if (redirect) {
-    return <Navigate to="/login" />;
+    return <Navigate to={`/profile/${id}`} />;
   }
 
   return (
     <Form onSubmit={onSubmit}>
-      <div className="d-flex justify-content-around align-items-center vw-100 vh-100 register pt-5">
-        <div>
-          <img
-            src="img/Register.png"
-            alt="Register"
-            className="register-image"
-          />
-        </div>
-        <Card className="shadow p-3 mb-5 bg-body rounded d-flex justify-content-center align-items-center register-card ">
-          <Card.Title className="primary-color">Register</Card.Title>
+      <div className="d-flex justify-content-around align-items-center vw-100 vh-100 register ">
+        <Card className="shadow p-3 pt-0 mb-5 bg-body rounded d-flex justify-content-center align-items-center register-card">
+          <Card.Title className="primary-color">Edit Profile</Card.Title>
 
           <br />
 
@@ -143,6 +160,7 @@ const Register = ({ user, setUser, loginUser }) => {
               className="border-0 border-bottom border-2 rounded-0 p-0"
               value={form.email}
               onChange={onChange}
+              disabled
             />
           </Form.Group>
 
@@ -157,46 +175,15 @@ const Register = ({ user, setUser, loginUser }) => {
             />
           </Form.Group>
 
-          <div className="d-flex justify-content-between my-2 w-75">
-            <Form.Check
-              type="radio"
-              id="Mentor"
-              name="role"
-              value="Mentor"
-              checked={form.role === "Mentor"}
-              onChange={onRoleChange}
-              label="Mentor"
-            />
 
-            <Form.Check
-              type="radio"
-              id="Mentee"
-              name="role"
-              value="Mentee"
-              checked={form.role === "Mentee"}
-              onChange={onRoleChange}
-              label="Mentee"
-            />
-          </div>
-
-          <Form.Group className="my-2 w-75" controlId="password">
-            <Form.Label>Password</Form.Label>
+          <Form.Group className="my-2 w-75" controlId="skills">
+            <Form.Label>Skills (comma-separated)</Form.Label>
             <Form.Control
-              type="password"
-              name="password"
+              type="text"
+              name="skills"
               className="border-0 border-bottom border-2 rounded-0 p-0"
-              value={form.password}
-              onChange={onChange}
-            />
-          </Form.Group>
-
-          <Form.Group className="my-2 w-75" controlId="confirmpassword">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              type="password"
-              name="confirmPassword"
-              className="border-0 border-bottom border-2 rounded-0 p-0"
-              value={form.confirmPassword}
+              placeholder="Enter skills separated by commas"
+              value={form.skills}
               onChange={onChange}
             />
           </Form.Group>
@@ -208,16 +195,12 @@ const Register = ({ user, setUser, loginUser }) => {
             className="bg-primary border-0 w-50"
             type="submit"
           >
-            Signup
+            Save Changes
           </Button>
-
-          <Card.Link href="/login" className="primary-color my-2">
-            Have an account? Login here!
-          </Card.Link>
         </Card>
       </div>
     </Form>
   );
 };
 
-export default Register;
+export default EditProfile;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase/config";
@@ -7,18 +7,82 @@ import { get, push, ref, set } from "firebase/database";
 const AddGoal = ({ user, setGoals, loadGoals }) => {
   const [goalTitle, setGoalTitle] = useState("");
   const [goalDescription, setGoalDescription] = useState("");
-  const [mentorName, setMentorName] = useState(
-    user.role === "Mentor" ? user.username : ""
+  const [mentorId, setMentorId] = useState(
+    user.role === "Mentor" ? user.id : ""
   );
-  const [menteeName, setMenteeName] = useState(
-    user.role === "Mentee" ? user.username : ""
+  const [menteeId, setMenteeId] = useState(
+    user.role === "Mentee" ? user.id : ""
   );
   const [dateOfCreation, setDateOfCreation] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
+  const [connections, setConnections] = useState([]);
   const navigate = useNavigate();
 
-  console.log(dateOfCreation);
+  const [users, setUsers] = useState({}); // Initialize as an empty object
+
+  // Load users from the database
+  const loadUsers = async () => {
+    try {
+      const dbRef = ref(db, "users");
+      const snapshot = await get(dbRef);
+
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        setUsers(userData); // Store users as an object
+      }
+    } catch (error) {
+      console.error("Error loading users: ", error);
+    }
+  };
+
+  const loadConnections = async () => {
+    try {
+      const dbRef = ref(db, "connections");
+      const snapshot = await get(dbRef);
+
+      if (snapshot.exists()) {
+        const allConnections = snapshot.val();
+
+        // Filter connections by opposite role
+        const userConnections = Object.keys(allConnections)
+          .map((id) => ({ id, ...allConnections[id] }))
+          .filter(
+            (connection) =>
+              (user.role === "Mentor" && connection.mentor === user.id) ||
+              (user.role === "Mentee" && connection.mentee === user.id)
+          )
+          .map((connection) => {
+            // Make sure the users object is loaded and contains the relevant user
+            const targetUserId =
+              user.role === "Mentor" ? connection.mentee : connection.mentor;
+            const targetUser = users[targetUserId];
+
+            return {
+              id: targetUserId,
+              username: targetUser ? targetUser.username : "Unknown",
+            };
+          });
+
+        setConnections(userConnections);
+      }
+    } catch (error) {
+      setAlertMessage("Error loading connections: " + error.message);
+      setAlertType("danger");
+    }
+  };
+
+  // Load user's connections to populate the mentor/mentee dropdown
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(users).length > 0) {
+      loadConnections(); // Ensure users data is loaded before loading connections
+    }
+  }, [users]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,8 +90,8 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
     if (
       !goalTitle ||
       !goalDescription ||
-      !mentorName ||
-      !menteeName ||
+      !mentorId ||
+      !menteeId ||
       !dateOfCreation
     ) {
       setAlertMessage("Please fill in all fields.");
@@ -35,15 +99,17 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
       return;
     }
 
-    // Update goals state
     try {
       const newDocRef = push(ref(db, "goals"));
       await set(newDocRef, {
         title: goalTitle,
         description: goalDescription,
-        mentor: mentorName,
-        mentee: menteeName,
+        mentorId,
+        menteeId,
         dateCreated: dateOfCreation,
+        userid: user.id,
+        completed: false,
+        progress: 0,
         userid: user.id,
         completed: false,
         progress: 0,
@@ -54,8 +120,8 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
       // Reset form
       setGoalTitle("");
       setGoalDescription("");
-      setMentorName("");
-      setMenteeName("");
+      setMentorId("");
+      setMenteeId("");
       setDateOfCreation("");
 
       // Show success alert
@@ -109,27 +175,41 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
               />
             </Form.Group>
 
-            <Form.Group controlId="mentorName">
-              <Form.Label>Mentor Name</Form.Label>
-              <Form.Control
-                type="text"
-                value={mentorName}
-                onChange={(e) => setMentorName(e.target.value)}
-                required
-                disabled={user.role === "Mentor"}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="menteeName">
-              <Form.Label>Mentee Name</Form.Label>
-              <Form.Control
-                type="text"
-                value={menteeName}
-                onChange={(e) => setMenteeName(e.target.value)}
-                required
-                disabled={user.role === "Mentee"}
-              />
-            </Form.Group>
+            {user.role === "Mentor" ? (
+              <Form.Group controlId="menteeId">
+                <Form.Label>Select Mentee</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={menteeId}
+                  onChange={(e) => setMenteeId(e.target.value)}
+                  required
+                >
+                  <option value="">Select Mentee</option>
+                  {connections.map((connection) => (
+                    <option key={connection.id} value={connection.id}>
+                      {connection.username}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            ) : (
+              <Form.Group controlId="mentorId">
+                <Form.Label>Select Mentor</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={mentorId}
+                  onChange={(e) => setMentorId(e.target.value)}
+                  required
+                >
+                  <option value="">Select Mentor</option>
+                  {connections.map((connection) => (
+                    <option key={connection.id} value={connection.id}>
+                      {connection.username}
+                    </option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
+            )}
 
             <Form.Group controlId="dateOfCreation">
               <Form.Label>Date of Creation</Form.Label>

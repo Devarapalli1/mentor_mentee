@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Card, Badge, Row, Col, Button } from "react-bootstrap";
 import Goals from "./Goals";
 import GoalsChart from "./GoalsChart";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebase/config";
 import { get, push, ref, set } from "firebase/database";
 
 const Profile = ({ currUser }) => {
+  const navigate = useNavigate();
   const { id } = useParams(); // Extract user ID from the URL
   const [user, setUser] = useState(null); // State to store user data
   const [goals, setGoals] = useState([]);
@@ -101,6 +102,8 @@ const Profile = ({ currUser }) => {
         mentor: currUser.role === "Mentor" ? currUser.id : user.id,
         mentee: currUser.role === "Mentee" ? currUser.id : user.id,
         status: "pending",
+        createdBy: currUser.id,
+        createdAt: new Date().toISOString(),
       });
       setConnection({ ...connection, status: "pending" });
     } catch (error) {
@@ -143,7 +146,7 @@ const Profile = ({ currUser }) => {
               marginRight: "2rem",
             }}
             src={
-              user.role
+              user.role === "Mentor"
                 ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD40po116YAeh-rRFht6E75O41HxxshP2UFw&s"
                 : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeFty9MSPvqt_0C1t8XMCRjj5sWycsXCQHlg&s"
             }
@@ -191,6 +194,16 @@ const Profile = ({ currUser }) => {
           </div>
 
           <span>{user.connections ? user.connections : 0}+ Connections</span>
+
+          {currUser.id === user.id && (
+            <Button
+              onClick={() => navigate(`/edit-profile/${user.id}`)}
+              className="ms-4"
+              variant="info"
+            >
+              <i className="fa-solid fa-user-edit"></i> Edit Profile
+            </Button>
+          )}
         </div>
       </Card>
 

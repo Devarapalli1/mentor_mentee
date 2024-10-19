@@ -46,6 +46,8 @@ const Login = ({ user, setUser, loginUser }) => {
       setAlert("");
       setRedirect(true);
       console.log(user);
+    } else {
+      setAlert("Invalid Email or Password");
     }
   };
 

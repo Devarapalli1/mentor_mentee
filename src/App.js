@@ -11,6 +11,8 @@ import Goals from "./components/Goals";
 import AddGoal from "./components/AddGoal";
 import EditGoal from "./components/EditGoal";
 import Profile from "./components/Profile";
+import EditProfile from "./components/EditProfile";
+import Connections from "./components/Connections";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -19,12 +21,7 @@ import { ref, get } from "firebase/database";
 
 function App() {
   const [user, setUser] = useState({
-    dateOfBirth: "2000-01-01",
-    email: "mentor@gmail.com",
-    password: "mentor123",
-    role: "Mentor",
-    username: "Mentor",
-    id: "-O9LR5XUZcX-elSGpYno",
+
   });
 
   const loginUser = async (email, password) => {
@@ -69,7 +66,7 @@ function App() {
           };
         })
         .filter((goal) => {
-          return goal.userid === user.id;
+          return goal.mentorId === user.id || goal.menteeId === user.id;
         });
 
       if (tempGoals.length > 0) {
@@ -162,6 +159,28 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="vw-100 vh-100 pt-5 goals">
                 <Profile currUser={user} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit-profile/:id"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 pt-5 goals">
+                <EditProfile currUser={user} setUser={setUser} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/connections"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 connections">
+                <Connections currUser={user} />
               </div>
             </ProtectedRoute>
           }

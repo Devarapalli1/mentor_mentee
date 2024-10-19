@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebase/config";
+import { get, push, ref, set, remove } from "firebase/database";
 import { db } from "../firebase/config";
 import { get, push, ref, set, remove } from "firebase/database";
 
@@ -54,6 +57,11 @@ const Goals = ({
       loadGoals();
     }
   }, []);
+  useEffect(() => {
+    if (renderViewAll) {
+      loadGoals();
+    }
+  }, []);
 
   return (
     <>
@@ -76,7 +84,7 @@ const Goals = ({
         </Card.Header>
         <Card.Body className="bg-secondary">
           {goals?.length > 0 &&
-            goals?.slice(0, 4).map((goal) => (
+            goals?.map((goal) => (
               <div
                 key={goal.id}
                 className="d-flex justify-content-between align-items-center bg-third px-4 my-1"

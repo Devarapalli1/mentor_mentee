@@ -29,6 +29,10 @@ const Goals = ({
     setShowModal(true);
   };
 
+  const handleTitleClick = (goal) => {
+    navigate(`/goal/${goal.id}`, { state: { goal } });
+  };
+
   const confirmDelete = async () => {
     if (goalToDelete) {
       const dbRef = ref(db, "goals/" + goalToDelete.id);
@@ -50,14 +54,7 @@ const Goals = ({
   classes += " mb-3";
 
   useEffect(() => {
-    if (renderViewAll) {
-      loadGoals();
-    }
-  }, []);
-  useEffect(() => {
-    if (renderViewAll) {
-      loadGoals();
-    }
+    loadGoals();
   }, []);
 
   return (
@@ -86,7 +83,13 @@ const Goals = ({
                 key={goal.id}
                 className="d-flex justify-content-between align-items-center bg-third px-4 my-1"
               >
-                <span>{goal.title}</span>
+                <span
+                  onClick={() => {
+                    handleTitleClick(goal);
+                  }}
+                >
+                  {goal.title}
+                </span>
                 {isSameUser && (
                   <div>
                     <Button

@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useAsyncError,
+} from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 
@@ -14,6 +19,7 @@ import EditGoal from "./components/EditGoal";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import Connections from "./components/Connections";
+import Forum from "./components/Forum";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -21,17 +27,7 @@ import { db } from "./firebase/config";
 import { ref, get } from "firebase/database";
 
 function App() {
-  const [user, setUser] = useState({
-    connections: 0,
-    dateOfBirth: "2009-01-01",
-    email: "test@gmail.com",
-    password: "test123",
-    rating: 5,
-    role: "Mentor",
-    skills: "Python,React,Java",
-    username: "test mentor",
-    id: "-O9SsfQ_UXgFC1wx37L5",
-  });
+  const [user, setUser] = useState({});
 
   const loginUser = async (email, password) => {
     const dbRef = ref(db, "users");
@@ -52,6 +48,10 @@ function App() {
 
       if (tempUsers.length === 1) {
         setUser(tempUsers[0]);
+        localStorage.setItem(
+          "mentor-mentee-user",
+          JSON.stringify(tempUsers[0])
+        );
         console.log(tempUsers[0]);
       }
     } else {
@@ -62,6 +62,7 @@ function App() {
   const [goals, setGoals] = useState([]);
 
   const loadGoals = async () => {
+    console.log("Load goals");
     const dbRef = ref(db, "goals");
     const snapshot = await get(dbRef);
     if (snapshot.exists()) {
@@ -89,6 +90,17 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    const user = localStorage.getItem("mentor-mentee-user");
+    try {
+      if (user) {
+        setUser(JSON.parse(user));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <Router>
       <Navbar user={user} />
@@ -112,6 +124,7 @@ function App() {
           element={
             <ProtectedRoute user={user}>
               <Dashboard
+                user={user}
                 goals={goals}
                 setGoals={setGoals}
                 loadGoals={loadGoals}
@@ -126,6 +139,7 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
                 <Goals
+                  user={user}
                   goals={goals}
                   setGoals={setGoals}
                   renderViewAll={false}
@@ -207,6 +221,17 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="vw-100 vh-100 p-5 connections">
                 <Connections currUser={user} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/forum"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 connections">
+                <Forum user={user} />
               </div>
             </ProtectedRoute>
           }

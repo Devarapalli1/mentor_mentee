@@ -110,7 +110,8 @@ const Connections = ({ currUser }) => {
           const connectedUser = users[connectedUserId];
           const creator = users[connection.createdBy]; // Fetch the user who sent the request
 
-          if (!connectedUser || !creator) return null;
+          if (!connectedUser || !creator || connection.status === "rejected")
+            return null;
 
           return (
             <Col md={6} key={connection.id}>

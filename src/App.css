@@ -76,3 +76,31 @@
 .connections {
   padding-top: 80px;
 }
+
+.create-post,
+.posts {
+  background-color: #005457;
+  color: #fff;
+}
+
+.create-post input,
+.create-post input::after,
+.create-post input::before,
+.create-post input:active,
+.create-post input:focus {
+  background-color: #005457;
+  border: 0;
+  border-bottom: 2px solid white;
+  border-radius: 0;
+  color: white;
+}
+
+.create-post input::placeholder {
+  color: white;
+}
+
+.create-post button {
+  background-color: #005457;
+  border: 2px solid white;
+  color: white;
+}

@@ -210,6 +210,7 @@ const Profile = ({ currUser }) => {
       <Row className="px-5">
         <Col md={6}>
           <Goals
+            user={user}
             goals={goals}
             setGoals={setGoals}
             loadGoals={loadGoals}

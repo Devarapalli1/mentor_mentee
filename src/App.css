@@ -47,6 +47,12 @@
   width: 600px;
 }
 
+.view-goal-card {
+  margin-top: 100px;
+  min-height: 600px;
+  min-width: 600px;
+}
+
 .chart {
   max-height: 150px;
   max-width: 100%;

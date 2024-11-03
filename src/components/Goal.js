@@ -1,22 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Card, Modal } from "react-bootstrap";
-import { ref, remove } from "firebase/database";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { ref, remove, set, update } from "firebase/database";
 import { db } from "../firebase/config";
 
 const ViewGoal = ({ user, goals, setGoals, setCurrentGoal, loadGoals }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const currGoal = location.state?.goal;
+  const { id } = useParams();
 
-  const [goal, setGoal] = useState(currGoal);
+  const [goal, setGoal] = useState({});
   const [showModal, setShowModal] = useState(false);
 
+  const [comment, setComment] = useState("");
+
   useEffect(() => {
-    if (goal.mentorId !== user.id && goal.menteeId !== user.id) {
+    const currGoal = goals.filter((goal) => goal.id === id)[0];
+    setGoal(currGoal);
+
+    if (currGoal.mentorId !== user.id && currGoal.menteeId !== user.id) {
       navigate("/");
     }
-  }, [goal]);
+
+    loadGoals();
+  }, []);
+
+  useEffect(() => {
+    const currGoal = goals.filter((goal) => goal.id === id)[0];
+    setGoal(currGoal);
+
+    if (currGoal.mentorId !== user.id && currGoal.menteeId !== user.id) {
+      navigate("/");
+    }
+  }, [goals]);
 
   const handleEditGoalClick = (goal) => {
     navigate("/edit-goal", { state: { goal } });
@@ -39,9 +55,35 @@ const ViewGoal = ({ user, goals, setGoals, setCurrentGoal, loadGoals }) => {
     }
   };
 
+  const addComment = async (e) => {
+    e.preventDefault();
+    if (comment.trim() === "") return;
+
+    const newComment = {
+      name: user.username,
+      text: comment,
+    };
+
+    const updatedComments = [...(goal.comments || []), newComment];
+    const goalRef = ref(db, "goals/" + goal.id);
+
+    console.log({ ...goal, comments: updatedComments });
+    await set(goalRef, {
+      ...goal,
+      comments: updatedComments,
+    });
+
+    setGoal((prevGoal) => ({
+      ...prevGoal,
+      comments: updatedComments,
+    }));
+
+    setComment("");
+  };
+
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
-      <Card className="goal-card me-5">
+    <div className="d-flex justify-content-center align-items-start vh-100">
+      <Card className="view-goal-card me-5">
         <Card.Header className="h6 bg-primary d-flex justify-content-between align-items-center">
           <div className="fw-bold">{goal.title}</div>
           <div>
@@ -83,21 +125,44 @@ const ViewGoal = ({ user, goals, setGoals, setCurrentGoal, loadGoals }) => {
           <p>
             <b>Comments</b>:
           </p>
+
+          <Form onSubmit={addComment}>
+            <Row>
+              <Col md={8}>
+                <Form.Group controlId="goalTitle">
+                  <Form.Control
+                    type="text"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Button
+                  variant="primary"
+                  className="bg-primary border-0"
+                  type="submit"
+                >
+                  Add Comment
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+
           {goal.comments?.length > 0 &&
             goal.comments.map((comment, index) => {
               return (
-                <div className="my-2">
+                <div className="my-2" key={index}>
                   <h5 className="mb-1">{comment.name}</h5>
-                  <p className="mt-0" key={index}>
-                    {comment.text}
-                  </p>
+                  <p className="mt-0">{comment.text}</p>
                 </div>
               );
             })}
         </Card.Body>
       </Card>
 
-      <Card className="goal-card">
+      <Card className="view-goal-card">
         <Card.Header className="h6 bg-primary d-flex justify-content-between align-items-center">
           <div className="fw-bold my-2">TO-DO List</div>
         </Card.Header>

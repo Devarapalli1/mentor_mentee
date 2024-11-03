@@ -175,6 +175,27 @@ const EditProfile = ({ user, setUser }) => {
             />
           </Form.Group>
 
+          <div className="d-flex justify-content-between my-2 w-75">
+            <Form.Check
+              type="radio"
+              id="Mentor"
+              name="role"
+              value="Mentor"
+              checked={form.role === "Mentor"}
+              onChange={onRoleChange}
+              label="Mentor"
+            />
+
+            <Form.Check
+              type="radio"
+              id="Mentee"
+              name="role"
+              value="Mentee"
+              checked={form.role === "Mentee"}
+              onChange={onRoleChange}
+              label="Mentee"
+            />
+          </div>
 
           <Form.Group className="my-2 w-75" controlId="skills">
             <Form.Label>Skills (comma-separated)</Form.Label>

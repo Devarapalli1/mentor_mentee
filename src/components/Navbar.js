@@ -37,8 +37,8 @@ const NavBar = ({ user }) => {
         .filter(
           (u) =>
             u.role !== user.role &&
-            (u?.username?.toLowerCase().includes(query?.toLowerCase()) ||
-              u?.skills?.toLowerCase().includes(query?.toLowerCase()))
+            (u.username.toLowerCase().includes(query.toLowerCase()) ||
+              u.skills.toLowerCase().includes(query.toLowerCase()))
         );
       setSearchResults(tempUsers);
     }

@@ -8,6 +8,7 @@ import Register from "./components/Register";
 import Logout from "./components/Logout";
 import Dashboard from "./components/Dashboard";
 import Goals from "./components/Goals";
+import Goal from "./components/Goal";
 import AddGoal from "./components/AddGoal";
 import EditGoal from "./components/EditGoal";
 import Profile from "./components/Profile";
@@ -21,7 +22,15 @@ import { ref, get } from "firebase/database";
 
 function App() {
   const [user, setUser] = useState({
-
+    connections: 0,
+    dateOfBirth: "2009-01-01",
+    email: "test@gmail.com",
+    password: "test123",
+    rating: 5,
+    role: "Mentor",
+    skills: "Python,React,Java",
+    username: "test mentor",
+    id: "-O9SsfQ_UXgFC1wx37L5",
   });
 
   const loginUser = async (email, password) => {
@@ -121,6 +130,23 @@ function App() {
                   setGoals={setGoals}
                   renderViewAll={false}
                   loadGoals={loadGoals}
+                />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/goal/:id"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
+                <Goal
+                  goals={goals}
+                  setGoals={setGoals}
+                  renderViewAll={false}
+                  loadGoals={loadGoals}
+                  user={user}
                 />
               </div>
             </ProtectedRoute>

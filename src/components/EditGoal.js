@@ -230,7 +230,7 @@ const EditGoal = ({ user, setGoals }) => {
                 value={goal.dateCreated}
                 onChange={handleInputChange}
                 required
-                disabled={goal.userid === user.id}
+                disabled
               />
             </Form.Group>
 

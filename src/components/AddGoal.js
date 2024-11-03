@@ -110,9 +110,7 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
         userid: user.id,
         completed: false,
         progress: 0,
-        userid: user.id,
-        completed: false,
-        progress: 0,
+        comments: [],
       });
 
       await loadGoals();

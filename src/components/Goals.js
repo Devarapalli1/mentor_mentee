@@ -5,6 +5,7 @@ import { db } from "../firebase/config";
 import { get, push, ref, set, remove } from "firebase/database";
 
 const Goals = ({
+  user,
   goals,
   setGoals,
   setCurrentGoal,
@@ -90,7 +91,7 @@ const Goals = ({
                 >
                   {goal.title}
                 </span>
-                {isSameUser && (
+                {user.id === goal.userid && (
                   <div>
                     <Button
                       variant="link"

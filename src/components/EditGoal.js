@@ -91,7 +91,6 @@ const EditGoal = ({ user, setGoals }) => {
     const { goal } = location.state || {};
     if (goal) {
       setGoal(goal);
-      console.log(goal);
     }
   }, [location.state]);
 

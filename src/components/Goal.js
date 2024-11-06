@@ -67,7 +67,6 @@ const ViewGoal = ({ user, goals, setGoals, setCurrentGoal, loadGoals }) => {
     const updatedComments = [...(goal.comments || []), newComment];
     const goalRef = ref(db, "goals/" + goal.id);
 
-    console.log({ ...goal, comments: updatedComments });
     await set(goalRef, {
       ...goal,
       comments: updatedComments,

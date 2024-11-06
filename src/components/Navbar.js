@@ -19,7 +19,6 @@ const NavBar = ({ user }) => {
 
   const handleClosePopup = () => {
     setDropdownVisible(false);
-    console.log("clicked");
   };
 
   const handleSearch = async (query) => {

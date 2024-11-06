@@ -21,6 +21,7 @@ import EditProfile from "./components/EditProfile";
 import Connections from "./components/Connections";
 import Forum from "./components/Forum";
 import Notifications from "./components/Notifications";
+import Meetings from "./components/Meetings";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -53,7 +54,6 @@ function App() {
           "mentor-mentee-user",
           JSON.stringify(tempUsers[0])
         );
-        console.log(tempUsers[0]);
       }
     } else {
       setUser({});
@@ -81,7 +81,6 @@ function App() {
 
       if (tempNotifications.length > 0) {
         setGoals(tempNotifications);
-        console.log(tempNotifications);
       } else {
         setGoals([]);
       }
@@ -109,7 +108,6 @@ function App() {
 
       if (tempNotifications.length > 0) {
         setNotifications(tempNotifications);
-        console.log(tempNotifications);
       } else {
         setNotifications([]);
       }
@@ -118,17 +116,47 @@ function App() {
     }
   };
 
+  const [meetings, setMeetings] = useState([]);
+
+  const loadMeetings = async () => {
+    const dbRef = ref(db, "meetings");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const meetings = snapshot.val();
+
+      const tempMeetings = Object.keys(meetings)
+        .map((id) => {
+          return {
+            ...meetings[id],
+            id,
+          };
+        })
+        .filter(
+          (meeting) =>
+            meeting.mentorId === user.id || meetings.menteeId === user.id
+        );
+
+      console.log("Meetings", meetings, tempMeetings);
+      if (tempMeetings.length > 0) {
+        setMeetings(tempMeetings);
+      } else {
+        setMeetings([]);
+      }
+    } else {
+      setMeetings([]);
+    }
+  };
+
   useEffect(() => {
     loadNotifications();
+    loadMeetings();
 
     const user = localStorage.getItem("mentor-mentee-user");
     try {
       if (user) {
         setUser(JSON.parse(user));
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }, []);
 
   return (
@@ -158,6 +186,9 @@ function App() {
                 goals={goals}
                 setGoals={setGoals}
                 loadGoals={loadGoals}
+                meetings={meetings}
+                setMeetings={setMeetings}
+                loadMeetings={loadMeetings}
               />
             </ProtectedRoute>
           }
@@ -276,6 +307,21 @@ function App() {
                   user={user}
                   notifications={notifications}
                   loadNotifications={loadNotifications}
+                />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/meetings"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 meetings">
+                <Meetings
+                  user={user}
+                  meetings={meetings}
+                  loadMeetings={loadMeetings}
                 />
               </div>
             </ProtectedRoute>

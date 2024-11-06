@@ -90,9 +90,7 @@ const Forum = ({ user }) => {
 
       setNewComment(""); // Clear input field after comment submission
       loadPosts(); // Reload posts to reflect new comment
-    } catch (error) {
-      console.log("Cannot add comment", error);
-    }
+    } catch (error) {}
   };
 
   const toggleComments = (postId) => {

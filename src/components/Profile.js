@@ -50,7 +50,6 @@ const Profile = ({ currUser }) => {
 
       if (tempGoals.length > 0) {
         setGoals(tempGoals);
-        console.log(tempGoals);
       } else {
         setGoals([]);
       }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../firebase/config";
-import { get, ref, set } from "firebase/database";
+import { get, push, ref, set } from "firebase/database";
 
 const EditGoal = ({ user, setGoals }) => {
   const navigate = useNavigate();
@@ -128,6 +128,12 @@ const EditGoal = ({ user, setGoals }) => {
       userid: user.id,
       completed: goal.completed,
       progress: goal.progress,
+    });
+
+    const newNotifRef = push(ref(db, "notifications"));
+    await set(newNotifRef, {
+      userid: goal.mentorId === user.id ? goal.menteeId : goal.mentorId,
+      text: `Goal: ${goal.title} has been updated by ${user.username}.`,
     });
 
     setGoals((prevGoals) =>

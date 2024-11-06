@@ -105,6 +105,13 @@ const Profile = ({ currUser }) => {
         createdBy: currUser.id,
         createdAt: new Date().toISOString(),
       });
+
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid: user.id,
+        text: "You have a new friend request. Please go to Connections page to check it!",
+      });
+
       setConnection({ ...connection, status: "pending" });
     } catch (error) {
       console.error("Error sending connection request: ", error);

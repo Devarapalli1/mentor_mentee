@@ -86,28 +86,6 @@ const ViewGoal = ({ user, goals, setGoals, setCurrentGoal, loadGoals }) => {
       <Card className="view-goal-card me-5">
         <Card.Header className="h6 bg-primary d-flex justify-content-between align-items-center">
           <div className="fw-bold">{goal.title}</div>
-
-          <div>
-            <Button
-              variant="link"
-              className="me-2"
-              onClick={() => {
-                handleEditGoalClick(goal);
-              }}
-            >
-              <i className="fa fa-pencil"></i>
-            </Button>
-            <Button
-              variant="link"
-              className="text-danger"
-              onClick={() => {
-                handleDeleteGoalClick(goal);
-              }}
-            >
-              <i className="fa fa-trash"></i>
-            </Button>
-          </div>
-
           {user.id === goal.userid && (
             <div>
               <Button
@@ -130,7 +108,6 @@ const ViewGoal = ({ user, goals, setGoals, setCurrentGoal, loadGoals }) => {
               </Button>
             </div>
           )}
-
         </Card.Header>
         <Card.Body>
           <p>

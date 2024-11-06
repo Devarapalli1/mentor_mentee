@@ -20,6 +20,7 @@ import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import Connections from "./components/Connections";
 import Forum from "./components/Forum";
+import Notifications from "./components/Notifications";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -28,7 +29,6 @@ import { ref, get } from "firebase/database";
 
 function App() {
   const [user, setUser] = useState({});
-
 
   const loginUser = async (email, password) => {
     const dbRef = ref(db, "users");
@@ -63,13 +63,12 @@ function App() {
   const [goals, setGoals] = useState([]);
 
   const loadGoals = async () => {
-    console.log("Load goals");
     const dbRef = ref(db, "goals");
     const snapshot = await get(dbRef);
     if (snapshot.exists()) {
       const goals = snapshot.val();
 
-      const tempGoals = Object.keys(goals)
+      const tempNotifications = Object.keys(goals)
         .map((id) => {
           return {
             ...goals[id],
@@ -80,9 +79,9 @@ function App() {
           return goal.mentorId === user.id || goal.menteeId === user.id;
         });
 
-      if (tempGoals.length > 0) {
-        setGoals(tempGoals);
-        console.log(tempGoals);
+      if (tempNotifications.length > 0) {
+        setGoals(tempNotifications);
+        console.log(tempNotifications);
       } else {
         setGoals([]);
       }
@@ -91,7 +90,37 @@ function App() {
     }
   };
 
+  const [notifications, setNotifications] = useState([]);
+
+  const loadNotifications = async () => {
+    const dbRef = ref(db, "notifications");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const notifications = snapshot.val();
+
+      const tempNotifications = Object.keys(notifications)
+        .map((id) => {
+          return {
+            ...notifications[id],
+            id,
+          };
+        })
+        .filter((notification) => notification.userid === user.id);
+
+      if (tempNotifications.length > 0) {
+        setNotifications(tempNotifications);
+        console.log(tempNotifications);
+      } else {
+        setNotifications([]);
+      }
+    } else {
+      setNotifications([]);
+    }
+  };
+
   useEffect(() => {
+    loadNotifications();
+
     const user = localStorage.getItem("mentor-mentee-user");
     try {
       if (user) {
@@ -104,7 +133,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar user={user} />
+      <Navbar user={user} notificationCount={notifications.length} />
       <Routes>
         <Route
           path="/register"
@@ -233,6 +262,21 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="vw-100 vh-100 p-5 connections">
                 <Forum user={user} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 notifications">
+                <Notifications
+                  user={user}
+                  notifications={notifications}
+                  loadNotifications={loadNotifications}
+                />
               </div>
             </ProtectedRoute>
           }

@@ -113,6 +113,12 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
         comments: [],
       });
 
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid: mentorId === user.id ? menteeId : mentorId,
+        text: `Goal: ${goalTitle} has been assigned to you by ${user.username}.`,
+      });
+
       await loadGoals();
 
       // Reset form

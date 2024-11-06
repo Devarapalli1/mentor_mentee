@@ -114,3 +114,7 @@
   background-color: #005457;
   color: white;
 }
+
+.todo-completed {
+  text-decoration: line-through;
+}

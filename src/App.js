@@ -16,6 +16,8 @@ import Goals from "./components/Goals";
 import Goal from "./components/Goal";
 import AddGoal from "./components/AddGoal";
 import EditGoal from "./components/EditGoal";
+import AddToDo from "./components/AddToDo";
+import EditToDo from "./components/EditToDo";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import Connections from "./components/Connections";
@@ -68,7 +70,7 @@ function App() {
     if (snapshot.exists()) {
       const goals = snapshot.val();
 
-      const tempNotifications = Object.keys(goals)
+      const tempGoals = Object.keys(goals)
         .map((id) => {
           return {
             ...goals[id],
@@ -79,8 +81,8 @@ function App() {
           return goal.mentorId === user.id || goal.menteeId === user.id;
         });
 
-      if (tempNotifications.length > 0) {
-        setGoals(tempNotifications);
+      if (tempGoals.length > 0) {
+        setGoals(tempGoals);
       } else {
         setGoals([]);
       }
@@ -88,6 +90,10 @@ function App() {
       setGoals([]);
     }
   };
+
+  useEffect(() => {
+    console.log(goals);
+  }, [goals]);
 
   const [notifications, setNotifications] = useState([]);
 
@@ -136,7 +142,6 @@ function App() {
             meeting.mentorId === user.id || meetings.menteeId === user.id
         );
 
-      console.log("Meetings", meetings, tempMeetings);
       if (tempMeetings.length > 0) {
         setMeetings(tempMeetings);
       } else {
@@ -249,6 +254,28 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
                 <EditGoal user={user} setGoals={setGoals} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/add-todo"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
+                <AddToDo loadGoals={loadGoals} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit-todo"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
+                <EditToDo loadGoals={loadGoals} />
               </div>
             </ProtectedRoute>
           }

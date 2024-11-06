@@ -29,6 +29,7 @@ import { ref, get } from "firebase/database";
 function App() {
   const [user, setUser] = useState({});
 
+
   const loginUser = async (email, password) => {
     const dbRef = ref(db, "users");
     const snapshot = await get(dbRef);

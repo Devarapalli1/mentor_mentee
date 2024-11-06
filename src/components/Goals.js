@@ -91,7 +91,10 @@ const Goals = ({
                 >
                   {goal.title}
                 </span>
+
+
                 {user.id === goal.userid && (
+
                   <div>
                     <Button
                       variant="link"

@@ -39,6 +39,15 @@ const Goals = ({
       const dbRef = ref(db, "goals/" + goalToDelete.id);
       await remove(dbRef);
 
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid:
+          goalToDelete.mentorId === user.id
+            ? goalToDelete.menteeId
+            : goalToDelete.mentorId,
+        text: `Goal ${goalToDelete.title} has been deleted by ${user.username}.`,
+      });
+
       setGoals((prevGoals) =>
         prevGoals.filter((currgoal) => currgoal.id !== goalToDelete.id)
       );
@@ -91,10 +100,7 @@ const Goals = ({
                 >
                   {goal.title}
                 </span>
-
-
                 {user.id === goal.userid && (
-
                   <div>
                     <Button
                       variant="link"

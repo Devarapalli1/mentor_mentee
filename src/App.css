@@ -42,6 +42,11 @@
   border-radius: 16px;
 }
 
+.dashboard {
+  padding-top: 150px !important;
+  overflow-x: hidden;
+}
+
 .goal-card {
   height: 600px;
   width: 600px;
@@ -105,3 +110,7 @@
   color: white;
 }
 
+.notification {
+  background-color: #005457;
+  color: white;
+}

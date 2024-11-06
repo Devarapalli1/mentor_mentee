@@ -17,8 +17,9 @@ const NavBar = ({ user }) => {
     setDropdownVisible((prev) => !prev);
   };
 
-  const handleViewProfile = () => {
+  const handleClosePopup = () => {
     setDropdownVisible(false);
+    console.log("clicked");
   };
 
   const handleSearch = async (query) => {
@@ -59,7 +60,12 @@ const NavBar = ({ user }) => {
       style={{ backgroundColor: "#005457" }}
     >
       <Container fluid>
-        <Navbar.Brand as={Link} to="/" className="w-50">
+        <Navbar.Brand
+          onClick={handleClosePopup}
+          as={Link}
+          to="/"
+          className="w-50"
+        >
           <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
         </Navbar.Brand>
 
@@ -124,6 +130,7 @@ const NavBar = ({ user }) => {
                     to="/goals" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
                     {location.pathname === "/goals" && (
                       <span className="text-decoration-underline">Goals</span>
@@ -135,6 +142,7 @@ const NavBar = ({ user }) => {
                     to="/notifications" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
                     {location.pathname === "/notifications" && (
                       <span className="text-decoration-underline">
@@ -148,6 +156,7 @@ const NavBar = ({ user }) => {
                     to="/connections" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
                     {location.pathname === "/connections" && (
                       <span className="text-decoration-underline">
@@ -161,6 +170,7 @@ const NavBar = ({ user }) => {
                     to="/forum" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
                     {location.pathname === "/forum" && (
                       <span className="text-decoration-underline">Forum</span>
@@ -169,8 +179,8 @@ const NavBar = ({ user }) => {
                   </Nav.Link>
                   <div className="position-relative">
                     <Nav.Link
-                      style={{ color: "#FFFFFF", cursor: "pointer" }}
                       onClick={toggleDropdown}
+                      style={{ color: "#FFFFFF", cursor: "pointer" }}
                     >
                       <i className="fa-solid fa-circle-user"></i>
                     </Nav.Link>
@@ -186,14 +196,15 @@ const NavBar = ({ user }) => {
                         }}
                       >
                         <Nav.Link
+                          onClick={handleClosePopup}
                           as={Link}
                           to={`/profile/${user.id}`}
                           style={{ color: "#000" }}
-                          onClick={handleViewProfile}
                         >
                           View Profile
                         </Nav.Link>
                         <Nav.Link
+                          onClick={handleClosePopup}
                           as={Link}
                           to="/logout"
                           style={{ color: "#000" }}

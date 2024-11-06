@@ -13,7 +13,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Goals from "./Goals";
 import GoalsChart from "./GoalsChart";
 
-const Dashboard = ({ goals, setGoals, loadGoals }) => {
+const Dashboard = ({ user, goals, setGoals, loadGoals }) => {
   const navigate = useNavigate();
 
   const [meetings, setMeetings] = useState([
@@ -83,6 +83,7 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
           <Row>
             <Col md={6}>
               <Goals
+                user={user}
                 goals={goals}
                 setGoals={setGoals}
                 loadGoals={loadGoals}

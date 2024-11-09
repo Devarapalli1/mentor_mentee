@@ -118,3 +118,10 @@
 .todo-completed {
   text-decoration: line-through;
 }
+
+.color-contrast-color {
+  color: #333333 !important;
+}
+.color-contrast-with-bg {
+  color: #fff !important;
+}

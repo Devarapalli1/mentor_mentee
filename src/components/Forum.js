@@ -105,13 +105,18 @@ const Forum = ({ user }) => {
             <Form onSubmit={createPost}>
               <Row>
                 <Col md={9}>
-                  <FormControl
-                    type="text"
-                    placeholder="Create a Post..."
-                    className="mr-sm-2"
-                    value={post.text}
-                    onChange={(e) => setPost({ ...post, text: e.target.value })}
-                  />
+                  <Form.Group controlId="post">
+                    <Form.Label>Post</Form.Label>
+                    <FormControl
+                      type="text"
+                      placeholder="Create a Post..."
+                      className="mr-sm-2"
+                      value={post.text}
+                      onChange={(e) =>
+                        setPost({ ...post, text: e.target.value })
+                      }
+                    />
+                  </Form.Group>
                 </Col>
                 <Col md={3}>
                   <Button

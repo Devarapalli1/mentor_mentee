@@ -271,7 +271,8 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
           <Form onSubmit={addComment}>
             <Row>
               <Col md={8}>
-                <Form.Group controlId="goalTitle">
+                <Form.Group controlId="goalTitle1">
+                  <Form.Label>Add Comment</Form.Label>
                   <Form.Control
                     type="text"
                     value={comment}
@@ -343,14 +344,14 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                     className="text-primary"
                     onClick={() => handleEditTodo(todo, index)}
                   >
-                    <i className="fa fa-pencil"></i>
+                    Edit <i className="fa fa-pencil"></i>
                   </Button>
                   <Button
                     variant="link"
                     className="text-danger"
                     onClick={() => handleDeleteTodo(index)}
                   >
-                    <i className="fa fa-trash"></i>
+                    Delete <i className="fa fa-trash"></i>
                   </Button>
                 </div>
               </div>

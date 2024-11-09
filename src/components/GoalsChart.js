@@ -28,7 +28,7 @@ function ProgressChart({ goals }) {
         labels: ["In Progress", "Completed"],
         datasets: [
           {
-            data: [inprogress, 100 - inprogress],
+            data: [100-completed, completed],
             backgroundColor: ["#ff9800", "#004d40"],
             hoverBackgroundColor: ["#ffa726", "#00695c"],
           },

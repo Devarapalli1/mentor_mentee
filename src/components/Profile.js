@@ -177,11 +177,19 @@ const Profile = ({ currUser }) => {
                       <i class="fa-solid fa-user-plus"></i>
                     </Button>
                   ) : connection.status === "pending" ? (
-                    <Button className="ms-4" variant="warning">
+                    <Button
+                      className="ms-4"
+                      variant="warning"
+                      onClick={() => {}}
+                    >
                       <i class="fa-solid fa-person-circle-exclamation"></i>
                     </Button>
                   ) : (
-                    <Button className="ms-4" variant="success">
+                    <Button
+                      className="ms-4"
+                      variant="success"
+                      onClick={() => {}}
+                    >
                       <i class="fa-solid fa-user-group"></i> Friends
                     </Button>
                   ))}

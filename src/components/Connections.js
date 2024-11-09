@@ -107,13 +107,16 @@ const Connections = ({ currUser }) => {
       <h3 className="mb-4">Your Connections</h3>
 
       {/* Search bar */}
-      <Form.Control
-        type="text"
-        placeholder="Search connections..."
-        className="mb-4"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <Form.Group>
+        <Form.Label>Search Connections</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Search connections..."
+          className="mb-4"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Form.Group>
 
       <Row>
         {filteredConnections.map((connection) => {

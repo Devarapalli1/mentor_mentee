@@ -71,7 +71,7 @@ const Goals = ({
     <>
       <Card className={classes}>
         <Card.Header className="h6 bg-primary d-flex justify-content-between">
-          <div className="fw-bold">Goals</div>
+          <div className="fw-bold color-contrast-with-bg">Goals</div>
           {isSameUser &&
             (renderViewAll ? (
               <div className="cursor-pointer fs-6" onClick={handleViewAllClick}>
@@ -86,7 +86,7 @@ const Goals = ({
               </div>
             ))}
         </Card.Header>
-        <Card.Body className="bg-secondary">
+        <Card.Body className="bg-secondary color-contrast-color">
           {goals?.length > 0 &&
             goals?.map((goal) => (
               <div
@@ -109,6 +109,7 @@ const Goals = ({
                         handleEditGoalClick(goal);
                       }}
                     >
+                      Edit
                       <i className="fa fa-pencil"></i>
                     </Button>
                     <Button
@@ -118,6 +119,7 @@ const Goals = ({
                         handleDeleteGoalClick(goal);
                       }}
                     >
+                      Delete
                       <i className="fa fa-trash"></i>
                     </Button>
                   </div>

@@ -63,9 +63,10 @@ const NavBar = ({ user }) => {
           onClick={handleClosePopup}
           as={Link}
           to="/"
-          className="w-50"
+          className="w-50 color-contrast-with-bg"
         >
           <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
+          Mentor Mentee Bridge
         </Navbar.Brand>
 
         {location.pathname !== "/login" &&
@@ -131,9 +132,15 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
-                    {location.pathname === "/goals" && (
-                      <span className="text-decoration-underline">Goals</span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/goals"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Goals
+                    </span>
                     <i className="fa-solid fa-bullseye ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -143,11 +150,15 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
-                    {location.pathname === "/notifications" && (
-                      <span className="text-decoration-underline">
-                        Notifications
-                      </span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/notifications"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Notifications
+                    </span>
                     <i className="fa-regular fa-bell ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -157,11 +168,15 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
-                    {location.pathname === "/connections" && (
-                      <span className="text-decoration-underline">
-                        Connections
-                      </span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/connections"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Connections
+                    </span>
                     <i className="fa-solid fa-link ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -171,9 +186,15 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
-                    {location.pathname === "/forum" && (
-                      <span className="text-decoration-underline">Forum</span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/forum"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Forum
+                    </span>
                     <i className="fa-solid fa-users ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -183,9 +204,16 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
-                    {location.pathname === "/faq" && (
-                      <span className="text-decoration-underline">Help</span>
-                    )}
+
+                    <span
+                      className={
+                        location.pathname === "/faq"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Help
+                    </span>
                     <i className="fa-solid fa-question-circle ms-2"></i>
                   </Nav.Link>
                   <div className="position-relative">
@@ -193,7 +221,7 @@ const NavBar = ({ user }) => {
                       onClick={toggleDropdown}
                       style={{ color: "#FFFFFF", cursor: "pointer" }}
                     >
-                      <i className="fa-solid fa-circle-user"></i>
+                      Profile <i className="fa-solid fa-circle-user"></i>
                     </Nav.Link>
                     {dropdownVisible && (
                       <div

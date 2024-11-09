@@ -21,7 +21,7 @@ function ProgressChart({ goals }) {
   useEffect(() => {
     if (goals.length > 0) {
       const mappedGoals = goals.map((goal) => goal.progress);
-      const inprogress =
+      const completed =
         mappedGoals.reduce((a, b) => a + b) / mappedGoals.length;
 
       setData({

@@ -204,6 +204,7 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
+
                     <span
                       className={
                         location.pathname === "/faq"

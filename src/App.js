@@ -24,6 +24,7 @@ import Connections from "./components/Connections";
 import Forum from "./components/Forum";
 import Notifications from "./components/Notifications";
 import Meetings from "./components/Meetings";
+import FAQ from "./components/FAQ";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -91,10 +92,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    console.log(goals);
-  }, [goals]);
-
   const [notifications, setNotifications] = useState([]);
 
   const loadNotifications = async () => {
@@ -149,6 +146,23 @@ function App() {
       }
     } else {
       setMeetings([]);
+    }
+  };
+
+  const [faqs, setFaqs] = useState([]);
+
+  const loadFAQ = async () => {
+    const dbRef = ref(db, "faq");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const faqData = snapshot.val();
+      const tempFAQ = Object.keys(faqData).map((id) => ({
+        ...faqData[id],
+        id,
+      }));
+      setFaqs(tempFAQ);
+    } else {
+      setFaqs([]);
     }
   };
 
@@ -320,6 +334,22 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="vw-100 vh-100 p-5 connections">
                 <Forum user={user} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/faq"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 faqs">
+                <FAQ
+                  user={user}
+                  faqs={faqs}
+                  setFaqs={setFaqs}
+                  loadFAQ={loadFAQ}
+                />
               </div>
             </ProtectedRoute>
           }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
-import { ref, remove, set, update } from "firebase/database";
+import { get, ref, remove, set, update } from "firebase/database";
 import { db } from "../firebase/config";
 
 const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
@@ -9,9 +9,16 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const [mentorName, setMentorName] = useState("");
+  const [menteeName, setMenteeName] = useState("");
+
   const [goal, setGoal] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [comment, setComment] = useState("");
+
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
 
   useEffect(() => {
     const currGoal = goals.find((goal) => goal.id === id);
@@ -31,7 +38,24 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
     if (currGoal.mentorId !== user.id && currGoal.menteeId !== user.id) {
       navigate("/");
     }
+
+    // Fetch mentor and mentee names based on IDs
+    if (currGoal) {
+      fetchUserName(currGoal.mentorId, setMentorName);
+      fetchUserName(currGoal.menteeId, setMenteeName);
+    }
   }, [goals]);
+
+  const fetchUserName = async (userId, setName) => {
+    if (userId) {
+      const userRef = ref(db, "users/" + userId);
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        setName(userData.username || "Unknown");
+      }
+    }
+  };
 
   const handleEditGoalClick = (goal) => {
     navigate("/edit-goal", { state: { goal } });
@@ -151,6 +175,40 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
     loadGoals();
   };
 
+  function average(array) {
+    if (array.length === 0) {
+      return 0;
+    }
+
+    let sum = 0;
+    for (let i = 0; i < array.length; i++) {
+      sum += array[i];
+    }
+
+    return sum / array.length;
+  }
+
+  const handleReviewSubmit = async () => {
+    try {
+      const currId = user.role === "Mentor" ? goal.menteeId : goal.mentorId;
+      const userRef = ref(db, `users/${currId}`);
+
+      const updatedRatings = [...(user.ratings || []), rating];
+      const updatedReviews = [...(user.reviews || []), review];
+
+      await update(userRef, {
+        ...user,
+        rating: average(updatedRatings),
+        ratings: updatedRatings,
+        reviews: updatedReviews,
+      });
+
+      setShowReviewModal(false);
+      setRating(0);
+      setReview("");
+    } catch (error) {}
+  };
+
   return (
     <div className="d-flex justify-content-center align-items-start vh-100">
       <Card className="view-goal-card me-5">
@@ -190,11 +248,24 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
             <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
-            <b>Mentor</b>: {goal.mentorId}
+            <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
-            <b>Mentee</b>: {goal.menteeId}
+            <b>Mentor</b>: {mentorName}
           </p>
+          <p>
+            <b>Mentee</b>: {menteeName}
+          </p>
+
+          {goal.completed && (
+            <Button
+              variant="primary"
+              className="border-0 bg-primary mb-3 w-100"
+              onClick={() => setShowReviewModal(true)}
+            >
+              Give Rating & Review
+            </Button>
+          )}
 
           <p>
             <b>Comments</b>:
@@ -307,6 +378,42 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showReviewModal} onHide={() => setShowReviewModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Rate and Review</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group controlId="rating">
+            <Form.Label>Rating</Form.Label>
+            <Form.Control
+              type="number"
+              min="1"
+              max="5"
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="review">
+            <Form.Label>Review</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowReviewModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleReviewSubmit}>
+            Submit Review
           </Button>
         </Modal.Footer>
       </Modal>

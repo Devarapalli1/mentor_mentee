@@ -36,9 +36,9 @@ const NavBar = ({ user }) => {
         .map((id) => ({ ...users[id], id }))
         .filter(
           (u) =>
-            u.role !== user.role &&
-            (u.username.toLowerCase().includes(query.toLowerCase()) ||
-              u.skills.toLowerCase().includes(query.toLowerCase()))
+            u?.role !== user?.role &&
+            (u?.username?.toLowerCase().includes(query?.toLowerCase()) ||
+              u?.skills?.toLowerCase().includes(query?.toLowerCase()))
         );
       setSearchResults(tempUsers);
     }
@@ -56,7 +56,7 @@ const NavBar = ({ user }) => {
     <Navbar
       expand="lg"
       className="position-absolute vw-100"
-      style={{ backgroundColor: "#005457" }}
+      style={{ backgroundColor: "#005457", zIndex: 1 }}
     >
       <Container fluid>
         <Navbar.Brand
@@ -175,6 +175,18 @@ const NavBar = ({ user }) => {
                       <span className="text-decoration-underline">Forum</span>
                     )}
                     <i className="fa-solid fa-users ms-2"></i>
+                  </Nav.Link>
+                  <Nav.Link
+                    as={Link}
+                    to="/faq" // Use Link
+                    style={{ color: "#FFFFFF" }}
+                    className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
+                  >
+                    {location.pathname === "/faq" && (
+                      <span className="text-decoration-underline">Help</span>
+                    )}
+                    <i className="fa-solid fa-question-circle ms-2"></i>
                   </Nav.Link>
                   <div className="position-relative">
                     <Nav.Link

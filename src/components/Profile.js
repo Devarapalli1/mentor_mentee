@@ -236,6 +236,18 @@ const Profile = ({ currUser }) => {
               </div>
             </Card.Body>
           </Card>
+          <Card className="dashboard-card mb-3">
+            <Card.Header className="h6 bg-primary fw-bold">Reviews</Card.Header>
+            <Card.Body className="bg-secondary">
+              <ul>
+                {user?.reviews?.map((review, index) => (
+                  <li>
+                    {review} {user.ratings ? user?.ratings[index] : ""}
+                  </li>
+                ))}
+              </ul>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </div>

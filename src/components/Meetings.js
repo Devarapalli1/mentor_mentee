@@ -91,24 +91,37 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
     }
   };
 
-  // Fetch mentors or mentees based on user's role
+  // Fetch mentors or mentees from connections based on user's role
   useEffect(() => {
-    const loadUsers = async () => {
-      const oppositeRole = user.role === "Mentor" ? "Mentee" : "Mentor";
-      const dbRef = ref(db, "users"); // Assuming "users" contains user profiles
+    const loadUsersFromConnections = async () => {
+      try {
+        const oppositeRole = user.role === "Mentor" ? "Mentee" : "Mentor";
+        const connectionsRef = ref(db, `connections/${user.id}`); // Assuming connections are stored under user ID in the "connections" node
 
-      const snapshot = await get(dbRef);
-      if (snapshot.exists()) {
-        const users = snapshot.val();
-        const filteredUsers = Object.keys(users)
-          .map((id) => ({ id, ...users[id] }))
-          .filter((user) => user.role === oppositeRole);
-        setAvailableUsers(filteredUsers);
+        const connectionsSnapshot = await get(connectionsRef);
+        if (connectionsSnapshot.exists()) {
+          const connectionsData = connectionsSnapshot.val();
+          const connectionIds = Object.keys(connectionsData);
+
+          const usersRef = ref(db, "users"); // Fetching user profiles from "users" node
+          const usersSnapshot = await get(usersRef);
+
+          if (usersSnapshot.exists()) {
+            const users = usersSnapshot.val();
+            const filteredUsers = connectionIds
+              .map((id) => ({ id, ...users[id] }))
+              .filter((usr) => usr && usr.role === oppositeRole);
+
+            setAvailableUsers(filteredUsers);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching connections:", error);
       }
     };
 
-    loadUsers();
-  }, [user.role]);
+    loadUsersFromConnections();
+  }, [user.role, user.id]);
 
   return (
     <Row className="pt-5">

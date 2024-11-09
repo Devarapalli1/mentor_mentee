@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import { Navigate } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import { db } from "../firebase/config";
-import { get, push, ref, set } from "firebase/database";
+import { get, push, ref, runTransaction, set } from "firebase/database";
 
 const Register = ({ user, setUser, loginUser }) => {
   const [form, setForm] = useState({
@@ -75,6 +75,28 @@ const Register = ({ user, setUser, loginUser }) => {
     }
 
     try {
+      const dbRef = ref(db, "users");
+      const snapshot = await get(dbRef);
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+
+        const tempUsers = Object.keys(users)
+          .map((id) => {
+            return {
+              ...users[id],
+              id,
+            };
+          })
+          .filter((user) => {
+            return user.email === form.email;
+          });
+
+        if (tempUsers.length > 0) {
+          setAlert("The email address you entered is already in use. ");
+          return;
+        }
+      }
+
       const newDocRef = push(ref(db, "users"));
       await set(newDocRef, {
         username: form.username,

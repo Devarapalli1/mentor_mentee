@@ -16,10 +16,15 @@ import Goals from "./components/Goals";
 import Goal from "./components/Goal";
 import AddGoal from "./components/AddGoal";
 import EditGoal from "./components/EditGoal";
+import AddToDo from "./components/AddToDo";
+import EditToDo from "./components/EditToDo";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
 import Connections from "./components/Connections";
 import Forum from "./components/Forum";
+import Notifications from "./components/Notifications";
+import Meetings from "./components/Meetings";
+import FAQ from "./components/FAQ";
 
 import ProtectedRoute from "./routing/ProtectedRoute";
 
@@ -52,7 +57,6 @@ function App() {
           "mentor-mentee-user",
           JSON.stringify(tempUsers[0])
         );
-        console.log(tempUsers[0]);
       }
     } else {
       setUser({});
@@ -62,7 +66,6 @@ function App() {
   const [goals, setGoals] = useState([]);
 
   const loadGoals = async () => {
-    console.log("Load goals");
     const dbRef = ref(db, "goals");
     const snapshot = await get(dbRef);
     if (snapshot.exists()) {
@@ -81,7 +84,6 @@ function App() {
 
       if (tempGoals.length > 0) {
         setGoals(tempGoals);
-        console.log(tempGoals);
       } else {
         setGoals([]);
       }
@@ -91,19 +93,98 @@ function App() {
   };
 
   useEffect(() => {
+    console.log(goals);
+  }, [goals]);
+
+  const [notifications, setNotifications] = useState([]);
+
+  const loadNotifications = async () => {
+    const dbRef = ref(db, "notifications");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const notifications = snapshot.val();
+
+      const tempNotifications = Object.keys(notifications)
+        .map((id) => {
+          return {
+            ...notifications[id],
+            id,
+          };
+        })
+        .filter((notification) => notification.userid === user.id);
+
+      if (tempNotifications.length > 0) {
+        setNotifications(tempNotifications);
+      } else {
+        setNotifications([]);
+      }
+    } else {
+      setNotifications([]);
+    }
+  };
+
+  const [meetings, setMeetings] = useState([]);
+
+  const loadMeetings = async () => {
+    const dbRef = ref(db, "meetings");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const meetings = snapshot.val();
+
+      const tempMeetings = Object.keys(meetings)
+        .map((id) => {
+          return {
+            ...meetings[id],
+            id,
+          };
+        })
+        .filter(
+          (meeting) =>
+            meeting.mentorId === user.id || meetings.menteeId === user.id
+        );
+
+      if (tempMeetings.length > 0) {
+        setMeetings(tempMeetings);
+      } else {
+        setMeetings([]);
+      }
+    } else {
+      setMeetings([]);
+    }
+  };
+
+  const [faqs, setFaqs] = useState([]);
+
+  const loadFAQ = async () => {
+    const dbRef = ref(db, "faq");
+    const snapshot = await get(dbRef);
+    if (snapshot.exists()) {
+      const faqData = snapshot.val();
+      const tempFAQ = Object.keys(faqData).map((id) => ({
+        ...faqData[id],
+        id,
+      }));
+      setFaqs(tempFAQ);
+    } else {
+      setFaqs([]);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+    loadMeetings();
+
     const user = localStorage.getItem("mentor-mentee-user");
     try {
       if (user) {
         setUser(JSON.parse(user));
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }, []);
 
   return (
     <Router>
-      <Navbar user={user} />
+      <Navbar user={user} notificationCount={notifications.length} />
       <Routes>
         <Route
           path="/register"
@@ -128,6 +209,9 @@ function App() {
                 goals={goals}
                 setGoals={setGoals}
                 loadGoals={loadGoals}
+                meetings={meetings}
+                setMeetings={setMeetings}
+                loadMeetings={loadMeetings}
               />
             </ProtectedRoute>
           }
@@ -194,6 +278,28 @@ function App() {
         />
 
         <Route
+          path="/add-todo"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
+                <AddToDo loadGoals={loadGoals} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/edit-todo"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="d-flex justify-content-around align-items-center vw-100 vh-100 pt-5 goals">
+                <EditToDo loadGoals={loadGoals} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/profile/:id"
           element={
             <ProtectedRoute user={user}>
@@ -232,6 +338,52 @@ function App() {
             <ProtectedRoute user={user}>
               <div className="vw-100 vh-100 p-5 connections">
                 <Forum user={user} />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/faq"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 faqs">
+                <FAQ
+                  user={user}
+                  faqs={faqs}
+                  setFaqs={setFaqs}
+                  loadFAQ={loadFAQ}
+                />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 notifications">
+                <Notifications
+                  user={user}
+                  notifications={notifications}
+                  loadNotifications={loadNotifications}
+                />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/meetings"
+          element={
+            <ProtectedRoute user={user}>
+              <div className="vw-100 vh-100 p-5 meetings">
+                <Meetings
+                  user={user}
+                  meetings={meetings}
+                  loadMeetings={loadMeetings}
+                />
               </div>
             </ProtectedRoute>
           }

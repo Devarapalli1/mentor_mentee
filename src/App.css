@@ -42,6 +42,11 @@
   border-radius: 16px;
 }
 
+.dashboard {
+  padding-top: 150px !important;
+  overflow-x: hidden;
+}
+
 .goal-card {
   height: 600px;
   width: 600px;
@@ -103,4 +108,13 @@
   background-color: #005457;
   border: 2px solid white;
   color: white;
+}
+
+.notification {
+  background-color: #005457;
+  color: white;
+}
+
+.todo-completed {
+  text-decoration: line-through;
 }

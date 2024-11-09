@@ -1,57 +1,39 @@
+// EditTodo.js
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ref, set } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { db } from "../firebase/config";
 import { Card, Button, Form } from "react-bootstrap";
 
-const AddTodo = ({ loadGoals }) => {
+const EditTodo = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const goal = location.state?.goal;
+  const todo = location.state?.todo;
+  const goalId = location.state?.goalId;
 
-  const [title, setTitle] = useState("");
-
-  // Set current date as the default for dateOfCreation
-  const [dateOfCreation, setDateOfCreation] = useState(
-    new Date().toISOString().split("T")[0] // Format YYYY-MM-DD
-  );
+  const [title, setTitle] = useState(todo.title);
+  const [dateOfCreation, setDateOfCreation] = useState(todo.dateOfCreation);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!goal.id) {
-      alert("Goal ID is missing. Please go back and select a goal.");
-      return;
-    }
-
-    if (!title || !dateOfCreation) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    const newTodo = {
+    const updatedTodo = {
+      ...todo,
       title,
       dateOfCreation,
-      completed: false,
     };
 
-    const updatedTodos = [...(goal.todos || []), newTodo];
+    const todosRef = ref(db, `goals/${goalId}/todos/${todo.index}`);
+    await update(todosRef, updatedTodo);
 
-    const todosRef = ref(db, `goals/${goal.id}`);
-    await set(todosRef, {
-      ...goal,
-      todos: updatedTodos,
-    });
-
-    await loadGoals();
-
-    navigate(`/goal/${goal.id}`);
+    navigate(`/goal/${goalId}`);
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <Card className="p-5 shadow">
-        <h3 className="text-center mb-4">New To-Do</h3>
+        <h3 className="text-center mb-4">Edit To-Do</h3>
+
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="todoTitle">
             <Form.Label>Title</Form.Label>
@@ -87,4 +69,4 @@ const AddTodo = ({ loadGoals }) => {
   );
 };
 
-export default AddTodo;
+export default EditTodo;

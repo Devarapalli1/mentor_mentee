@@ -92,10 +92,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    console.log(goals);
-  }, [goals]);
-
   const [notifications, setNotifications] = useState([]);
 
   const loadNotifications = async () => {

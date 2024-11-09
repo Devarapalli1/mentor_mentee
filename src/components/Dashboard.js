@@ -183,7 +183,7 @@ const Dashboard = ({
 
                     {/* New dropdown for selecting mentor/mentee */}
                     <Form.Group controlId="selectUser">
-                      <Form.Label>
+                      <Form.Label className="primary-color">
                         Select {user.role === "Mentor" ? "Mentee" : "Mentor"}
                       </Form.Label>
                       <Form.Control

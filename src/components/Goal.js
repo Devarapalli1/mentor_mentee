@@ -248,6 +248,9 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
             <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
+            <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
+          </p>
+          <p>
             <b>Mentor</b>: {mentorName}
           </p>
           <p>

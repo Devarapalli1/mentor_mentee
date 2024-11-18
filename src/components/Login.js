@@ -45,7 +45,6 @@ const Login = ({ user, setUser, loginUser }) => {
     if (user?.email && user?.id) {
       setAlert("");
       setRedirect(true);
-      console.log(user);
     } else {
       setAlert("Invalid Email or Password");
     }

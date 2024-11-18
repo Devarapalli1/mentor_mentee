@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db } from "../firebase/config";
-import { get, ref, set } from "firebase/database";
+import { get, push, ref, set } from "firebase/database";
 
 const EditGoal = ({ user, setGoals }) => {
   const navigate = useNavigate();
@@ -39,7 +39,6 @@ const EditGoal = ({ user, setGoals }) => {
     }
   };
 
-  // Load user's connections
   const loadConnections = async () => {
     try {
       const dbRef = ref(db, "connections");
@@ -58,13 +57,15 @@ const EditGoal = ({ user, setGoals }) => {
           )
           .map((connection) => {
             // Make sure the users object is loaded and contains the relevant user
-            const targetuserid =
+            const targetUserId =
               user.role === "Mentor" ? connection.mentee : connection.mentor;
-            const targetUser = users[targetuserid];
+            const targetUser = users[targetUserId];
 
             return {
-              id: targetuserid,
+              id: targetUserId,
               username: targetUser ? targetUser.username : "Unknown",
+              mentee: connection.mentee,
+              mentor: connection.mentor,
             };
           });
 
@@ -82,8 +83,8 @@ const EditGoal = ({ user, setGoals }) => {
   }, []);
 
   useEffect(() => {
-    if (users.length > 0) {
-      loadConnections();
+    if (Object.keys(users).length > 0) {
+      loadConnections(); // Ensure users data is loaded before loading connections
     }
   }, [users]);
 
@@ -91,9 +92,8 @@ const EditGoal = ({ user, setGoals }) => {
     const { goal } = location.state || {};
     if (goal) {
       setGoal(goal);
-      console.log(goal);
     }
-  }, [location.state]);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -120,6 +120,7 @@ const EditGoal = ({ user, setGoals }) => {
 
     const newDocRef = ref(db, "goals/" + goal.id);
     await set(newDocRef, {
+      ...goal,
       title: goal.title,
       description: goal.description,
       mentorId: goal.mentorId,
@@ -128,6 +129,12 @@ const EditGoal = ({ user, setGoals }) => {
       userid: user.id,
       completed: goal.completed,
       progress: goal.progress,
+    });
+
+    const newNotifRef = push(ref(db, "notifications"));
+    await set(newNotifRef, {
+      userid: goal.mentorId === user.id ? goal.menteeId : goal.mentorId,
+      text: `Goal: ${goal.title} has been updated by ${user.username}.`,
     });
 
     setGoals((prevGoals) =>
@@ -165,7 +172,7 @@ const EditGoal = ({ user, setGoals }) => {
                 value={goal.title}
                 onChange={handleInputChange}
                 required
-                disabled={goal.userid === user.id}
+                disabled={goal.userid !== user.id}
               />
             </Form.Group>
 
@@ -178,7 +185,7 @@ const EditGoal = ({ user, setGoals }) => {
                 value={goal.description}
                 onChange={handleInputChange}
                 required
-                disabled={goal.userid === user.id}
+                disabled={goal.userid !== user.id}
               />
             </Form.Group>
 
@@ -191,7 +198,7 @@ const EditGoal = ({ user, setGoals }) => {
                   value={goal.menteeId}
                   onChange={handleInputChange}
                   required
-                  disabled={goal.userid === user.id}
+                  disabled={goal.userid !== user.id}
                 >
                   <option value="">Select Mentee</option>
                   {connections.map((connection) => (
@@ -210,7 +217,7 @@ const EditGoal = ({ user, setGoals }) => {
                   value={goal.mentorId}
                   onChange={handleInputChange}
                   required
-                  disabled={goal.userid === user.id}
+                  disabled={goal.userid !== user.id}
                 >
                   <option value="">Select Mentor</option>
                   {connections.map((connection) => (

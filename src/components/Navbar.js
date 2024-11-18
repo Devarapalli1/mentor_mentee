@@ -17,7 +17,7 @@ const NavBar = ({ user }) => {
     setDropdownVisible((prev) => !prev);
   };
 
-  const handleViewProfile = () => {
+  const handleClosePopup = () => {
     setDropdownVisible(false);
   };
 
@@ -56,11 +56,17 @@ const NavBar = ({ user }) => {
     <Navbar
       expand="lg"
       className="position-absolute vw-100"
-      style={{ backgroundColor: "#005457" }}
+      style={{ backgroundColor: "#005457", zIndex: 1 }}
     >
       <Container fluid>
-        <Navbar.Brand as={Link} to="/" className="w-50">
+        <Navbar.Brand
+          onClick={handleClosePopup}
+          as={Link}
+          to="/"
+          className="w-50 color-contrast-with-bg"
+        >
           <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
+          Mentor Mentee Bridge
         </Navbar.Brand>
 
         {location.pathname !== "/login" &&
@@ -124,10 +130,17 @@ const NavBar = ({ user }) => {
                     to="/goals" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
-                    {location.pathname === "/goals" && (
-                      <span className="text-decoration-underline">Goals</span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/goals"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Goals
+                    </span>
                     <i className="fa-solid fa-bullseye ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -135,12 +148,17 @@ const NavBar = ({ user }) => {
                     to="/notifications" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
-                    {location.pathname === "/notifications" && (
-                      <span className="text-decoration-underline">
-                        Notifications
-                      </span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/notifications"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Notifications
+                    </span>
                     <i className="fa-regular fa-bell ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -148,12 +166,17 @@ const NavBar = ({ user }) => {
                     to="/connections" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
-                    {location.pathname === "/connections" && (
-                      <span className="text-decoration-underline">
-                        Connections
-                      </span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/connections"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Connections
+                    </span>
                     <i className="fa-solid fa-link ms-2"></i>
                   </Nav.Link>
                   <Nav.Link
@@ -161,18 +184,44 @@ const NavBar = ({ user }) => {
                     to="/forum" // Use Link
                     style={{ color: "#FFFFFF" }}
                     className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
                   >
-                    {location.pathname === "/forum" && (
-                      <span className="text-decoration-underline">Forum</span>
-                    )}
+                    <span
+                      className={
+                        location.pathname === "/forum"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Forum
+                    </span>
                     <i className="fa-solid fa-users ms-2"></i>
+                  </Nav.Link>
+                  <Nav.Link
+                    as={Link}
+                    to="/faq" // Use Link
+                    style={{ color: "#FFFFFF" }}
+                    className="d-flex justify-content-center align-items-center"
+                    onClick={handleClosePopup}
+                  >
+
+                    <span
+                      className={
+                        location.pathname === "/faq"
+                          ? "text-decoration-underline"
+                          : "text-decoration-none"
+                      }
+                    >
+                      Help
+                    </span>
+                    <i className="fa-solid fa-question-circle ms-2"></i>
                   </Nav.Link>
                   <div className="position-relative">
                     <Nav.Link
-                      style={{ color: "#FFFFFF", cursor: "pointer" }}
                       onClick={toggleDropdown}
+                      style={{ color: "#FFFFFF", cursor: "pointer" }}
                     >
-                      <i className="fa-solid fa-circle-user"></i>
+                      Profile <i className="fa-solid fa-circle-user"></i>
                     </Nav.Link>
                     {dropdownVisible && (
                       <div
@@ -186,14 +235,15 @@ const NavBar = ({ user }) => {
                         }}
                       >
                         <Nav.Link
+                          onClick={handleClosePopup}
                           as={Link}
                           to={`/profile/${user.id}`}
                           style={{ color: "#000" }}
-                          onClick={handleViewProfile}
                         >
                           View Profile
                         </Nav.Link>
                         <Nav.Link
+                          onClick={handleClosePopup}
                           as={Link}
                           to="/logout"
                           style={{ color: "#000" }}

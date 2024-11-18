@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -7,26 +7,38 @@ import {
   Form,
   Button,
   ListGroup,
+  OverlayTrigger,
+  Tooltip,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Goals from "./Goals";
 import GoalsChart from "./GoalsChart";
+import { get, push, ref, set } from "firebase/database";
+import { db } from "../firebase/config";
 
-const Dashboard = ({ goals, setGoals, loadGoals }) => {
+const Dashboard = ({
+  user,
+  goals,
+  setGoals,
+  loadGoals,
+  meetings,
+  setMeetings,
+  loadMeetings,
+}) => {
   const navigate = useNavigate();
 
-  const [meetings, setMeetings] = useState([
-    { id: 1, title: "Meeting for Python Learning" },
-    { id: 2, title: "Brain Storming Session" },
-  ]);
-
+  const [availableUsers, setAvailableUsers] = useState([]);
   const [newMeeting, setNewMeeting] = useState({
     title: "",
-    description: "",
     startTime: "",
     endTime: "",
+    url: "",
+    mentorId: user.role === "Mentor" ? user.id : null,
+    menteeId: user.role === "Mentee" ? user.id : null,
+    createdBy: user.id,
   });
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleMeetingChange = (e) => {
     const { name, value } = e.target;
@@ -36,42 +48,85 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
     }));
   };
 
-  const handleMeetingSubmit = (e) => {
+  const handleMeetingSubmit = async (e) => {
     e.preventDefault();
 
-    if (!newMeeting.title) {
-      alert("Meeting title is required.");
+    if (
+      !newMeeting.title ||
+      !newMeeting.startTime ||
+      !newMeeting.endTime ||
+      !newMeeting.url
+    ) {
+      alert("All fields are required.");
       return;
     }
 
-    if (!newMeeting.startTime || !newMeeting.endTime) {
-      alert("Both start time and end time are required.");
-      return;
-    }
+    const meetingRef = isEditing
+      ? ref(db, "meetings/" + newMeeting.id) // Reference for updating
+      : push(ref(db, "meetings")); // Reference for creating
 
-    const startTime = new Date(newMeeting.startTime);
-    const endTime = new Date(newMeeting.endTime);
-    if (startTime >= endTime) {
-      alert("Start time must be before end time.");
-      return;
-    }
+    await set(meetingRef, newMeeting);
 
-    const now = new Date();
-    if (startTime < now || endTime < now) {
-      alert("Start time and end time must be in the future.");
-      return;
-    }
+    await loadMeetings();
+    setNewMeeting({
+      title: "",
+      startTime: "",
+      endTime: "",
+      url: "", // Reset URL field
+      mentorId: user.role === "Mentor" ? user.id : null,
+      menteeId: user.role === "Mentee" ? user.id : null,
+      createdBy: user.id,
+    });
+  };
 
-    setMeetings((prev) => [
-      ...prev,
-      { id: prev.length + 1, title: newMeeting.title },
-    ]);
-    setNewMeeting({ title: "", description: "", startTime: "", endTime: "" });
+  const handleEditClick = (meeting) => {
+    setNewMeeting(meeting); // Load meeting details into the form
+    setIsEditing(true);
+  };
+
+  const handleStopEditing = () => {
+    setNewMeeting({
+      title: "",
+      startTime: "",
+      endTime: "",
+      url: "",
+      mentorId: user.role === "Mentor" ? user.id : null,
+      menteeId: user.role === "Mentee" ? user.id : null,
+      createdBy: user.id,
+    });
+    setIsEditing(false);
   };
 
   const handleViewAllMeetingsClick = () => {
     navigate("/meetings");
   };
+
+  const handleRedirectToUrl = (meeting) => {
+    if (meeting.url) {
+      window.open(meeting.url, "_blank", "noopener,noreferrer");
+    } else {
+      alert("No URL provided for this meeting.");
+    }
+  };
+
+  // Fetch mentors or mentees based on user's role
+  useEffect(() => {
+    const loadUsers = async () => {
+      const oppositeRole = user.role === "Mentor" ? "Mentee" : "Mentor";
+      const dbRef = ref(db, "users"); // Assuming "users" contains user profiles
+
+      const snapshot = await get(dbRef);
+      if (snapshot.exists()) {
+        const users = snapshot.val();
+        const filteredUsers = Object.keys(users)
+          .map((id) => ({ id, ...users[id] }))
+          .filter((user) => user.role === oppositeRole);
+        setAvailableUsers(filteredUsers);
+      }
+    };
+
+    loadUsers();
+  }, [user.role]);
 
   return (
     <Container
@@ -83,6 +138,7 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
           <Row>
             <Col md={6}>
               <Goals
+                user={user}
                 goals={goals}
                 setGoals={setGoals}
                 loadGoals={loadGoals}
@@ -110,12 +166,14 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
             <Col md={6}>
               <Card className="dashboard-card mb-3">
                 <Card.Header className="h6 bg-primary fw-bold">
-                  Add a Meeting
+                  {isEditing ? "Update" : "Add a"} Meeting
                 </Card.Header>
                 <Card.Body className="bg-secondary">
                   <Form onSubmit={handleMeetingSubmit}>
                     <Form.Group controlId="meetingTitle">
-                      <Form.Label>Title</Form.Label>
+                      <Form.Label className="color-contrast-color">
+                        Title
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         name="title"
@@ -124,18 +182,52 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
                         required
                       />
                     </Form.Group>
-                    <Form.Group controlId="meetingDescription">
-                      <Form.Label>Description</Form.Label>
+
+                    {/* New dropdown for selecting mentor/mentee */}
+                    <Form.Group controlId="selectUser">
+                      <Form.Label className="color-contrast-color">
+                        Select {user.role === "Mentor" ? "Mentee" : "Mentor"}
+                      </Form.Label>
                       <Form.Control
-                        type="text"
-                        name="description"
-                        value={newMeeting.description}
+                        as="select"
+                        name={user.role === "Mentor" ? "menteeId" : "mentorId"}
+                        value={
+                          user.role === "Mentor"
+                            ? newMeeting.menteeId
+                            : newMeeting.mentorId
+                        }
+                        onChange={handleMeetingChange}
+                        required
+                      >
+                        <option value="">
+                          Select {user.role === "Mentor" ? "Mentee" : "Mentor"}
+                        </option>
+                        {availableUsers.map((usr) => (
+                          <option key={usr.id} value={usr.id}>
+                            {usr.username}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId="meetingURL">
+                      <Form.Label className="color-contrast-color">
+                        Meeting URL
+                      </Form.Label>
+                      <Form.Control
+                        type="url"
+                        name="url"
+                        value={newMeeting.url}
                         onChange={handleMeetingChange}
                         required
                       />
                     </Form.Group>
+
+                    {/* Other form fields for start and end time */}
                     <Form.Group controlId="meetingStartTime">
-                      <Form.Label>Start Time</Form.Label>
+                      <Form.Label className="color-contrast-color">
+                        Start Time
+                      </Form.Label>
                       <Form.Control
                         type="datetime-local"
                         name="startTime"
@@ -145,7 +237,9 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
                       />
                     </Form.Group>
                     <Form.Group controlId="meetingEndTime">
-                      <Form.Label>End Time</Form.Label>
+                      <Form.Label className="color-contrast-color">
+                        End Time
+                      </Form.Label>
                       <Form.Control
                         type="datetime-local"
                         name="endTime"
@@ -154,15 +248,21 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
                         required
                       />
                     </Form.Group>
-                    <div className="d-flex justify-content-center align-items-center">
-                      <Button
-                        variant="primary"
-                        type="submit"
-                        className="bg-primary mt-2 w-50 border-0"
-                      >
-                        Submit
-                      </Button>
-                    </div>
+
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      className="bg-primary mt-2 w-50 border-0"
+                    >
+                      Submit
+                    </Button>
+                    <Button
+                      variant="primary"
+                      className="bg-primary mt-2 w-50 border-0"
+                      onClick={handleStopEditing}
+                    >
+                      Create New
+                    </Button>
                   </Form>
                 </Card.Body>
               </Card>
@@ -180,14 +280,49 @@ const Dashboard = ({ goals, setGoals, loadGoals }) => {
                 </Card.Header>
                 <Card.Body className="bg-secondary">
                   <ListGroup>
-                    {meetings.slice(0, 4).map((meeting) => (
-                      <ListGroup.Item
-                        key={meeting.id}
-                        className="rounded-0 my-1"
-                      >
-                        {meeting.title}
-                      </ListGroup.Item>
-                    ))}
+                    {meetings &&
+                      meetings.slice(0, 5).map((meeting) => (
+                        <ListGroup.Item
+                          key={meeting.id}
+                          className="rounded-0 my-1 d-flex justify-content-between"
+                        >
+                          <div>{meeting.title}</div>
+                          <div>
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tooltip-edit-${meeting.id}`}>
+                                  Edit Meeting
+                                </Tooltip>
+                              }
+                            >
+                              <i
+                                className="fa fa-pencil"
+                                onClick={() => handleEditClick(meeting)}
+                                style={{
+                                  cursor: "pointer",
+                                  marginRight: "10px",
+                                }}
+                              ></i>
+                            </OverlayTrigger>
+
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tooltip-link-${meeting.id}`}>
+                                  Open URL
+                                </Tooltip>
+                              }
+                            >
+                              <i
+                                className="fa fa-link"
+                                onClick={() => handleRedirectToUrl(meeting)}
+                                style={{ cursor: "pointer" }}
+                              ></i>
+                            </OverlayTrigger>
+                          </div>
+                        </ListGroup.Item>
+                      ))}
                   </ListGroup>
                 </Card.Body>
               </Card>

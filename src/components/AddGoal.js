@@ -13,7 +13,12 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
   const [menteeId, setMenteeId] = useState(
     user.role === "Mentee" ? user.id : ""
   );
-  const [dateOfCreation, setDateOfCreation] = useState("");
+
+  // Set current date as the default for dateOfCreation
+  const [dateOfCreation, setDateOfCreation] = useState(
+    new Date().toISOString().split("T")[0] // Format YYYY-MM-DD
+  );
+
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
   const [connections, setConnections] = useState([]);
@@ -61,6 +66,8 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
             return {
               id: targetUserId,
               username: targetUser ? targetUser.username : "Unknown",
+              mentee: connection.mentee,
+              mentor: connection.mentor,
             };
           });
 
@@ -120,7 +127,7 @@ const AddGoal = ({ user, setGoals, loadGoals }) => {
       setGoalDescription("");
       setMentorId("");
       setMenteeId("");
-      setDateOfCreation("");
+      setDateOfCreation(""); // Optionally reset or set to current date
 
       // Show success alert
       setAlertMessage("Goal added successfully!");

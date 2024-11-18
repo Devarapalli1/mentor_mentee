@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, Form } from "react-bootstrap";
 import { db } from "../firebase/config";
-import { get, ref, update } from "firebase/database";
+import { get, push, ref, set, update } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 
 const Connections = ({ currUser }) => {
@@ -48,10 +48,17 @@ const Connections = ({ currUser }) => {
   };
 
   // Accept a connection request
-  const acceptConnection = async (connectionId) => {
+  const acceptConnection = async (connection) => {
     try {
-      const dbRef = ref(db, `connections/${connectionId}`);
+      const dbRef = ref(db, `connections/${connection.id}`);
       await update(dbRef, { status: "accepted" });
+
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid: connection.createdBy,
+        text: `${currUser.username} has accepted your Connection request.`,
+      });
+
       loadConnections();
     } catch (error) {
       console.error("Error accepting connection: ", error);
@@ -59,10 +66,17 @@ const Connections = ({ currUser }) => {
   };
 
   // Reject a connection request
-  const rejectConnection = async (connectionId) => {
+  const rejectConnection = async (connection) => {
     try {
-      const dbRef = ref(db, `connections/${connectionId}`);
+      const dbRef = ref(db, `connections/${connection.id}`);
       await update(dbRef, { status: "rejected" });
+
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid: connection.createdBy,
+        text: `${currUser.username} has rejected your Connection request.`,
+      });
+
       loadConnections();
     } catch (error) {
       console.error("Error rejecting connection: ", error);
@@ -93,13 +107,16 @@ const Connections = ({ currUser }) => {
       <h3 className="mb-4">Your Connections</h3>
 
       {/* Search bar */}
-      <Form.Control
-        type="text"
-        placeholder="Search connections..."
-        className="mb-4"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <Form.Group>
+        <Form.Label>Search Connections</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Search connections..."
+          className="mb-4"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Form.Group>
 
       <Row>
         {filteredConnections.map((connection) => {
@@ -110,7 +127,8 @@ const Connections = ({ currUser }) => {
           const connectedUser = users[connectedUserId];
           const creator = users[connection.createdBy]; // Fetch the user who sent the request
 
-          if (!connectedUser || !creator) return null;
+          if (!connectedUser || !creator || connection.status === "rejected")
+            return null;
 
           return (
             <Col md={6} key={connection.id}>
@@ -133,13 +151,13 @@ const Connections = ({ currUser }) => {
                               <Button
                                 variant="success"
                                 className="me-2"
-                                onClick={() => acceptConnection(connection.id)}
+                                onClick={() => acceptConnection(connection)}
                               >
                                 Accept
                               </Button>
                               <Button
                                 variant="danger"
-                                onClick={() => rejectConnection(connection.id)}
+                                onClick={() => rejectConnection(connection)}
                               >
                                 Reject
                               </Button>

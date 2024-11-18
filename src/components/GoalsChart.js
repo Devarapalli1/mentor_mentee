@@ -21,14 +21,14 @@ function ProgressChart({ goals }) {
   useEffect(() => {
     if (goals.length > 0) {
       const mappedGoals = goals.map((goal) => goal.progress);
-      const inprogress =
+      const completed =
         mappedGoals.reduce((a, b) => a + b) / mappedGoals.length;
 
       setData({
         labels: ["In Progress", "Completed"],
         datasets: [
           {
-            data: [inprogress, 100 - inprogress],
+            data: [100-completed, completed],
             backgroundColor: ["#ff9800", "#004d40"],
             hoverBackgroundColor: ["#ffa726", "#00695c"],
           },

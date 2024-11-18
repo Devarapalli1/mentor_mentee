@@ -5,6 +5,7 @@ import { db } from "../firebase/config";
 import { get, push, ref, set, remove } from "firebase/database";
 
 const Goals = ({
+  user,
   goals,
   setGoals,
   setCurrentGoal,
@@ -33,10 +34,23 @@ const Goals = ({
     navigate(`/goal/${goal.id}`, { state: { goal } });
   };
 
+  const handleTitleClick = (goal) => {
+    navigate(`/goal/${goal.id}`, { state: { goal } });
+  };
+
   const confirmDelete = async () => {
     if (goalToDelete) {
       const dbRef = ref(db, "goals/" + goalToDelete.id);
       await remove(dbRef);
+
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid:
+          goalToDelete.mentorId === user.id
+            ? goalToDelete.menteeId
+            : goalToDelete.mentorId,
+        text: `Goal ${goalToDelete.title} has been deleted by ${user.username}.`,
+      });
 
       setGoals((prevGoals) =>
         prevGoals.filter((currgoal) => currgoal.id !== goalToDelete.id)
@@ -61,7 +75,7 @@ const Goals = ({
     <>
       <Card className={classes}>
         <Card.Header className="h6 bg-primary d-flex justify-content-between">
-          <div className="fw-bold">Goals</div>
+          <div className="fw-bold color-contrast-with-bg">Goals</div>
           {isSameUser &&
             (renderViewAll ? (
               <div className="cursor-pointer fs-6" onClick={handleViewAllClick}>
@@ -76,7 +90,7 @@ const Goals = ({
               </div>
             ))}
         </Card.Header>
-        <Card.Body className="bg-secondary">
+        <Card.Body className="bg-secondary color-contrast-color">
           {goals?.length > 0 &&
             goals?.map((goal) => (
               <div
@@ -99,6 +113,7 @@ const Goals = ({
                         handleEditGoalClick(goal);
                       }}
                     >
+                      Edit
                       <i className="fa fa-pencil"></i>
                     </Button>
                     <Button
@@ -108,6 +123,7 @@ const Goals = ({
                         handleDeleteGoalClick(goal);
                       }}
                     >
+                      Delete
                       <i className="fa fa-trash"></i>
                     </Button>
                   </div>

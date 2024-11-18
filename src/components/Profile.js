@@ -50,7 +50,6 @@ const Profile = ({ currUser }) => {
 
       if (tempGoals.length > 0) {
         setGoals(tempGoals);
-        console.log(tempGoals);
       } else {
         setGoals([]);
       }
@@ -105,6 +104,13 @@ const Profile = ({ currUser }) => {
         createdBy: currUser.id,
         createdAt: new Date().toISOString(),
       });
+
+      const newNotifRef = push(ref(db, "notifications"));
+      await set(newNotifRef, {
+        userid: user.id,
+        text: "You have a new friend request. Please go to Connections page to check it!",
+      });
+
       setConnection({ ...connection, status: "pending" });
     } catch (error) {
       console.error("Error sending connection request: ", error);
@@ -171,11 +177,19 @@ const Profile = ({ currUser }) => {
                       <i class="fa-solid fa-user-plus"></i>
                     </Button>
                   ) : connection.status === "pending" ? (
-                    <Button className="ms-4" variant="warning">
+                    <Button
+                      className="ms-4"
+                      variant="warning"
+                      onClick={() => {}}
+                    >
                       <i class="fa-solid fa-person-circle-exclamation"></i>
                     </Button>
                   ) : (
-                    <Button className="ms-4" variant="success">
+                    <Button
+                      className="ms-4"
+                      variant="success"
+                      onClick={() => {}}
+                    >
                       <i class="fa-solid fa-user-group"></i> Friends
                     </Button>
                   ))}
@@ -210,6 +224,7 @@ const Profile = ({ currUser }) => {
       <Row className="px-5">
         <Col md={6}>
           <Goals
+            user={user}
             goals={goals}
             setGoals={setGoals}
             loadGoals={loadGoals}
@@ -227,6 +242,18 @@ const Profile = ({ currUser }) => {
               <div className="text-center">
                 <GoalsChart goals={goals} />
               </div>
+            </Card.Body>
+          </Card>
+          <Card className="dashboard-card mb-3">
+            <Card.Header className="h6 bg-primary fw-bold">Reviews</Card.Header>
+            <Card.Body className="bg-secondary">
+              <ul>
+                {user?.reviews?.map((review, index) => (
+                  <li>
+                    {review} {user.ratings ? user?.ratings[index] : ""}
+                  </li>
+                ))}
+              </ul>
             </Card.Body>
           </Card>
         </Col>

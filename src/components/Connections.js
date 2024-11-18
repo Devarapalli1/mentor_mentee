@@ -108,13 +108,15 @@ const Connections = ({ currUser }) => {
 
       {/* Search bar */}
       <Form.Group>
-        <Form.Label>Search Connections</Form.Label>
+        <Form.Label htmlFor="searchConnections">Search Connections</Form.Label>
         <Form.Control
           type="text"
+          id="searchConnections"
           placeholder="Search connections..."
           className="mb-4"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Search Connections"
         />
       </Form.Group>
 

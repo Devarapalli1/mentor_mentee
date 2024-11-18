@@ -34,10 +34,6 @@ const Goals = ({
     navigate(`/goal/${goal.id}`, { state: { goal } });
   };
 
-  const handleTitleClick = (goal) => {
-    navigate(`/goal/${goal.id}`, { state: { goal } });
-  };
-
   const confirmDelete = async () => {
     if (goalToDelete) {
       const dbRef = ref(db, "goals/" + goalToDelete.id);
@@ -86,7 +82,7 @@ const Goals = ({
                 className="cursor-pointer fs-6"
                 onClick={handleAddNewGoalClick}
               >
-                <i className="fa-solid fa-circle-plus"></i>
+                <em className="fa-solid fa-circle-plus"></em>
               </div>
             ))}
         </Card.Header>
@@ -104,7 +100,7 @@ const Goals = ({
                 >
                   {goal.title}
                 </span>
-                {isSameUser && (
+                {user.id === goal.userid && (
                   <div>
                     <Button
                       variant="link"
@@ -114,7 +110,7 @@ const Goals = ({
                       }}
                     >
                       Edit
-                      <i className="fa fa-pencil"></i>
+                      <em className="fa fa-pencil"></em>
                     </Button>
                     <Button
                       variant="link"
@@ -124,7 +120,7 @@ const Goals = ({
                       }}
                     >
                       Delete
-                      <i className="fa fa-trash"></i>
+                      <em className="fa fa-trash"></em>
                     </Button>
                   </div>
                 )}

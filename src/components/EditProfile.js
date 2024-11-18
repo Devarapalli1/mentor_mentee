@@ -133,10 +133,10 @@ const EditProfile = ({ user, setUser }) => {
 
           {alert && (
             <Alert variant="danger" className="w-100 p-2">
-              <i
+              <em
                 className="fa-solid fa-triangle-exclamation me-2"
                 style={{ color: "red" }}
-              ></i>
+              ></em>
               {alert}
             </Alert>
           )}
@@ -174,28 +174,6 @@ const EditProfile = ({ user, setUser }) => {
               onChange={onChange}
             />
           </Form.Group>
-
-          <div className="d-flex justify-content-between my-2 w-75">
-            <Form.Check
-              type="radio"
-              id="Mentor"
-              name="role"
-              value="Mentor"
-              checked={form.role === "Mentor"}
-              onChange={onRoleChange}
-              label="Mentor"
-            />
-
-            <Form.Check
-              type="radio"
-              id="Mentee"
-              name="role"
-              value="Mentee"
-              checked={form.role === "Mentee"}
-              onChange={onRoleChange}
-              label="Mentee"
-            />
-          </div>
 
           <Form.Group className="my-2 w-75" controlId="skills">
             <Form.Label>Skills (comma-separated)</Form.Label>

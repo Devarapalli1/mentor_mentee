@@ -67,10 +67,10 @@ const Login = ({ user, setUser, loginUser }) => {
 
           {alert && (
             <Alert variant="danger" className="w-100 p-2">
-              <i
+              <em
                 className="fa-solid fa-triangle-exclamation me-2"
                 style={{ color: "red" }}
-              ></i>
+              ></em>
               {alert}
             </Alert>
           )}

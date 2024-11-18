@@ -14,7 +14,6 @@ import Logout from "./components/Logout";
 import Dashboard from "./components/Dashboard";
 import Goals from "./components/Goals";
 import Goal from "./components/Goal";
-import Goal from "./components/Goal";
 import AddGoal from "./components/AddGoal";
 import EditGoal from "./components/EditGoal";
 import AddToDo from "./components/AddToDo";
@@ -33,17 +32,7 @@ import { db } from "./firebase/config";
 import { ref, get } from "firebase/database";
 
 function App() {
-  const [user, setUser] = useState({
-    connections: 0,
-    dateOfBirth: "2009-01-01",
-    email: "test@gmail.com",
-    password: "test123",
-    rating: 5,
-    role: "Mentor",
-    skills: "Python,React,Java",
-    username: "test mentor",
-    id: "-O9SsfQ_UXgFC1wx37L5",
-  });
+  const [user, setUser] = useState({});
 
   const loginUser = async (email, password) => {
     const dbRef = ref(db, "users");

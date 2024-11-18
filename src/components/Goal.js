@@ -223,7 +223,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                   handleEditGoalClick(goal);
                 }}
               >
-                <i className="fa fa-pencil"></i>
+                <em className="fa fa-pencil"></em>
               </Button>
               <Button
                 variant="link"
@@ -232,7 +232,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                   handleDeleteGoalClick(goal);
                 }}
               >
-                <i className="fa fa-trash"></i>
+                <em className="fa fa-trash"></em>
               </Button>
             </div>
           )}
@@ -316,7 +316,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
               className="cursor-pointer fs-6"
               onClick={handleAddNewTodoClick}
             >
-              <i className="fa-solid fa-circle-plus"></i>
+              <em className="fa-solid fa-circle-plus"></em>
             </div>
           </div>
         </Card.Header>
@@ -328,11 +328,17 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                 className="todo-item my-2 bg-primary px-4 py-1 d-flex justify-content-between align-items-center"
               >
                 <div className="d-flex align-items-center">
-                  <Form.Check
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => handleToggleTodo(index)}
-                  />
+                  <Form.Group controlId={`todoStatus${index}`}>
+                    <Form.Label htmlFor={`todoStatus${index}`}>
+                      Status
+                    </Form.Label>
+                    <Form.Check
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() => handleToggleTodo(index)}
+                      id={`todoStatus${index}`}
+                    />
+                  </Form.Group>
                   <p
                     className={`m-0 ms-2 todo-${
                       todo.completed ? "completed" : "pending"
@@ -344,17 +350,17 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                 <div>
                   <Button
                     variant="link"
-                    className="text-primary"
+                    className="text-warning text-decoration-none"
                     onClick={() => handleEditTodo(todo, index)}
                   >
-                    Edit <i className="fa fa-pencil"></i>
+                    Edit <em className="fa fa-pencil"></em>
                   </Button>
                   <Button
                     variant="link"
-                    className="text-danger"
+                    className="text-warning text-decoration-none"
                     onClick={() => handleDeleteTodo(index)}
                   >
-                    Delete <i className="fa fa-trash"></i>
+                    Delete <em className="fa fa-trash"></em>
                   </Button>
                 </div>
               </div>

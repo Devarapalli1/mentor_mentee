@@ -296,14 +296,14 @@ const Dashboard = ({
                                 </Tooltip>
                               }
                             >
-                              <i
+                              <em
                                 className="fa fa-pencil"
                                 onClick={() => handleEditClick(meeting)}
                                 style={{
                                   cursor: "pointer",
                                   marginRight: "10px",
                                 }}
-                              ></i>
+                              ></em>
                             </OverlayTrigger>
 
                             <OverlayTrigger
@@ -314,11 +314,11 @@ const Dashboard = ({
                                 </Tooltip>
                               }
                             >
-                              <i
+                              <em
                                 className="fa fa-link"
                                 onClick={() => handleRedirectToUrl(meeting)}
                                 style={{ cursor: "pointer" }}
-                              ></i>
+                              ></em>
                             </OverlayTrigger>
                           </div>
                         </ListGroup.Item>

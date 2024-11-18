@@ -82,7 +82,7 @@ const Goals = ({
                 className="cursor-pointer fs-6"
                 onClick={handleAddNewGoalClick}
               >
-                <i className="fa-solid fa-circle-plus"></i>
+                <em className="fa-solid fa-circle-plus"></em>
               </div>
             ))}
         </Card.Header>
@@ -110,7 +110,7 @@ const Goals = ({
                       }}
                     >
                       Edit
-                      <i className="fa fa-pencil"></i>
+                      <em className="fa fa-pencil"></em>
                     </Button>
                     <Button
                       variant="link"
@@ -120,7 +120,7 @@ const Goals = ({
                       }}
                     >
                       Delete
-                      <i className="fa fa-trash"></i>
+                      <em className="fa fa-trash"></em>
                     </Button>
                   </div>
                 )}

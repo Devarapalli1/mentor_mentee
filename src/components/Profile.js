@@ -156,7 +156,7 @@ const Profile = ({ currUser }) => {
                 ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD40po116YAeh-rRFht6E75O41HxxshP2UFw&s"
                 : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeFty9MSPvqt_0C1t8XMCRjj5sWycsXCQHlg&s"
             }
-            alt="Mentor/Mentee"
+            alt="Mentor/Mentee Avatar"
           ></img>
 
           <div className="ml-4">
@@ -174,7 +174,7 @@ const Profile = ({ currUser }) => {
                       className="ms-4"
                       variant="success"
                     >
-                      <i class="fa-solid fa-user-plus"></i>
+                      <em class="fa-solid fa-user-plus"></em>
                     </Button>
                   ) : connection.status === "pending" ? (
                     <Button
@@ -182,7 +182,7 @@ const Profile = ({ currUser }) => {
                       variant="warning"
                       onClick={() => {}}
                     >
-                      <i class="fa-solid fa-person-circle-exclamation"></i>
+                      <em class="fa-solid fa-person-circle-exclamation"></em>
                     </Button>
                   ) : (
                     <Button
@@ -190,7 +190,7 @@ const Profile = ({ currUser }) => {
                       variant="success"
                       onClick={() => {}}
                     >
-                      <i class="fa-solid fa-user-group"></i> Friends
+                      <em class="fa-solid fa-user-group"></em> Friends
                     </Button>
                   ))}
               </span>
@@ -215,7 +215,7 @@ const Profile = ({ currUser }) => {
               className="ms-4"
               variant="info"
             >
-              <i className="fa-solid fa-user-edit"></i> Edit Profile
+              <em className="fa-solid fa-user-edit"></em> Edit Profile
             </Button>
           )}
         </div>

@@ -65,7 +65,11 @@ const NavBar = ({ user }) => {
           to="/"
           className="w-50 color-contrast-with-bg"
         >
-          <img src="/logo.png" alt="Logo" style={{ width: "120px" }} />
+          <img
+            src="/logo.png"
+            alt="Mentor Mentee Logo"
+            style={{ width: "120px" }}
+          />
           Mentor Mentee Bridge
         </Navbar.Brand>
 
@@ -80,7 +84,19 @@ const NavBar = ({ user }) => {
                     e.preventDefault();
                   }}
                 >
+                  {/* Add label for accessibility */}
+                  <label
+                    htmlFor="search-input"
+                    className="visually-hidden"
+                    style={{ color: "#FFFFFF" }} // Ensures the label text is accessible
+                  >
+                    {user.role === "Mentor"
+                      ? "Search for Mentees"
+                      : "Search for Mentors with name or skill"}
+                  </label>
+
                   <Form.Control
+                    id="search-input" // Links the label with this input
                     type="search"
                     placeholder={
                       user.role === "Mentor"
@@ -95,12 +111,20 @@ const NavBar = ({ user }) => {
                     }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      backgroundColor: "#005457", // Dark green background
+                      color: "#FFFFFF", // White text for high contrast
+                      border: "1px solid #FFFFFF", // Optional: border for focus visibility
+                    }}
                   />
+
                   <div className="d-flex justify-content-center align-items-center ms-2">
-                    <i
+                    <em
                       className="fa-solid fa-magnifying-glass"
-                      style={{ color: "#FFFFFF" }}
-                    ></i>
+                      style={{
+                        color: "#FFFFFF", // Ensures contrast with the background
+                      }}
+                    ></em>
                   </div>
                 </Form>
 
@@ -117,7 +141,7 @@ const NavBar = ({ user }) => {
                           onClick={closeSearchResults}
                           className="btn btn-link"
                         >
-                          <i class="fa-solid fa-eye"></i>
+                          <em class="fa-solid fa-eye"></em>
                         </Link>
                       </div>
                     ))}
@@ -141,7 +165,7 @@ const NavBar = ({ user }) => {
                     >
                       Goals
                     </span>
-                    <i className="fa-solid fa-bullseye ms-2"></i>
+                    <em className="fa-solid fa-bullseye ms-2"></em>
                   </Nav.Link>
                   <Nav.Link
                     as={Link}
@@ -159,7 +183,7 @@ const NavBar = ({ user }) => {
                     >
                       Notifications
                     </span>
-                    <i className="fa-regular fa-bell ms-2"></i>
+                    <em className="fa-regular fa-bell ms-2"></em>
                   </Nav.Link>
                   <Nav.Link
                     as={Link}
@@ -177,7 +201,7 @@ const NavBar = ({ user }) => {
                     >
                       Connections
                     </span>
-                    <i className="fa-solid fa-link ms-2"></i>
+                    <em className="fa-solid fa-link ms-2"></em>
                   </Nav.Link>
                   <Nav.Link
                     as={Link}
@@ -195,7 +219,7 @@ const NavBar = ({ user }) => {
                     >
                       Forum
                     </span>
-                    <i className="fa-solid fa-users ms-2"></i>
+                    <em className="fa-solid fa-users ms-2"></em>
                   </Nav.Link>
                   <Nav.Link
                     as={Link}
@@ -204,7 +228,6 @@ const NavBar = ({ user }) => {
                     className="d-flex justify-content-center align-items-center"
                     onClick={handleClosePopup}
                   >
-
                     <span
                       className={
                         location.pathname === "/faq"
@@ -214,14 +237,14 @@ const NavBar = ({ user }) => {
                     >
                       Help
                     </span>
-                    <i className="fa-solid fa-question-circle ms-2"></i>
+                    <em className="fa-solid fa-question-circle ms-2"></em>
                   </Nav.Link>
                   <div className="position-relative">
                     <Nav.Link
                       onClick={toggleDropdown}
                       style={{ color: "#FFFFFF", cursor: "pointer" }}
                     >
-                      Profile <i className="fa-solid fa-circle-user"></i>
+                      Profile <em className="fa-solid fa-circle-user"></em>
                     </Nav.Link>
                     {dropdownVisible && (
                       <div
@@ -249,7 +272,7 @@ const NavBar = ({ user }) => {
                           style={{ color: "#000" }}
                         >
                           Logout
-                          <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                          <em className="fa-solid fa-arrow-right-from-bracket"></em>
                         </Nav.Link>
                       </div>
                     )}
@@ -262,7 +285,7 @@ const NavBar = ({ user }) => {
         {location.pathname === "/login" && (
           <Nav className="me-2 my-2 my-lg-0" navbarScroll>
             <Nav.Link as={Link} to="/register" style={{ color: "#FFFFFF" }}>
-              Register <i className="fa-solid fa-right-to-bracket"></i>
+              Register <em className="fa-solid fa-right-to-bracket"></em>
             </Nav.Link>
           </Nav>
         )}
@@ -270,7 +293,7 @@ const NavBar = ({ user }) => {
         {location.pathname === "/register" && (
           <Nav className="me-2 my-2 my-lg-0" navbarScroll>
             <Nav.Link as={Link} to="/login" style={{ color: "#FFFFFF" }}>
-              Login <i className="fa-solid fa-right-to-bracket"></i>
+              Login <em className="fa-solid fa-right-to-bracket"></em>
             </Nav.Link>
           </Nav>
         )}

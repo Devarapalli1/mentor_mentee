@@ -16,6 +16,14 @@
   color: white !important;
 }
 
+.secondary-color {
+  color: #00c4b4 !important;
+}
+
+.warning-color {
+  color: #781113 !important;
+}
+
 .bg-third {
   background-color: white !important;
   color: #005457 !important;

@@ -136,7 +136,7 @@ const Forum = ({ user }) => {
               <Card className="mb-3 posts" key={index}>
                 <Card.Body>
                   <div className="d-flex align-items-center mb-2">
-                    <i className="fas fa-user-circle fa-2x"></i>
+                    <em className="fas fa-user-circle fa-2x"></em>
                     <Card.Title
                       className="mb-0 ms-2"
                       onClick={() => handleUserClick(post.userid)}
@@ -147,13 +147,13 @@ const Forum = ({ user }) => {
                   </div>
                   <Card.Text>{post.text}</Card.Text>
                   <Card.Footer>
-                    <i className="fas fa-comments"></i>
+                    <em className="fas fa-comments"></em>
                     {post?.comments ? post.comments.length : 0}
                     Comment{post?.comments && post.comments.length !== 1 && "s"}
                     <Button
                       variant="link"
                       onClick={() => toggleComments(post.id)}
-                      className="ms-2"
+                      className="ms-2 text-decoration-none text-white"
                     >
                       {showComments[post.id] ? "Hide" : "Show"} Comments
                     </Button>
@@ -187,9 +187,9 @@ const Forum = ({ user }) => {
                       {post?.comments &&
                         post.comments.map((comment, idx) => (
                           <div key={idx} className="my-2">
-                            <i className="fas fa-user-circle me-2"></i>
+                            <em className="fas fa-user-circle me-2"></em>
                             <span className="me-4">
-                              <b>{comment.name}</b>
+                              <strong>{comment.name}</strong>
                             </span>
                             <p>{comment.text}</p>
                           </div>

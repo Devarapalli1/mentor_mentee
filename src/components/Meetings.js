@@ -133,19 +133,19 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
           <Card.Body className="bg-secondary">
             <Form onSubmit={handleMeetingSubmit}>
               <Form.Group controlId="meetingTitle">
-                <Form.Label>Title</Form.Label>
+                <Form.Label className="color-contrast-color">Title</Form.Label>
                 <Form.Control
                   type="text"
                   name="title"
                   value={newMeeting.title}
                   onChange={handleMeetingChange}
-                  required
+                  requiredz
                 />
               </Form.Group>
 
               {/* New dropdown for selecting mentor/mentee */}
               <Form.Group controlId="selectUser">
-                <Form.Label>
+                <Form.Label className="color-contrast-color">
                   Select {user.role === "Mentor" ? "Mentee" : "Mentor"}
                 </Form.Label>
                 <Form.Control
@@ -171,7 +171,9 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
               </Form.Group>
 
               <Form.Group controlId="meetingURL">
-                <Form.Label>Meeting URL</Form.Label>
+                <Form.Label className="color-contrast-color">
+                  Meeting URL
+                </Form.Label>
                 <Form.Control
                   type="url"
                   name="url"
@@ -183,7 +185,9 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
 
               {/* Other form fields for start and end time */}
               <Form.Group controlId="meetingStartTime">
-                <Form.Label>Start Time</Form.Label>
+                <Form.Label className="color-contrast-color">
+                  Start Time
+                </Form.Label>
                 <Form.Control
                   type="datetime-local"
                   name="startTime"
@@ -193,7 +197,9 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
                 />
               </Form.Group>
               <Form.Group controlId="meetingEndTime">
-                <Form.Label>End Time</Form.Label>
+                <Form.Label className="color-contrast-color">
+                  End Time
+                </Form.Label>
                 <Form.Control
                   type="datetime-local"
                   name="endTime"
@@ -246,14 +252,14 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
                           </Tooltip>
                         }
                       >
-                        <i
+                        <em
                           className="fa fa-pencil"
                           onClick={() => handleEditClick(meeting)}
                           style={{
                             cursor: "pointer",
                             marginRight: "10px",
                           }}
-                        ></i>
+                        ></em>
                       </OverlayTrigger>
 
                       <OverlayTrigger
@@ -264,11 +270,11 @@ const Meetings = ({ user, meetings, setMeetings, loadMeetings }) => {
                           </Tooltip>
                         }
                       >
-                        <i
+                        <em
                           className="fa fa-link"
                           onClick={() => handleRedirectToUrl(meeting)}
                           style={{ cursor: "pointer" }}
-                        ></i>
+                        ></em>
                       </OverlayTrigger>
                     </div>
                   </ListGroup.Item>

@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import { Navigate } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import { db } from "../firebase/config";
-import { get, push, ref, runTransaction, set } from "firebase/database";
+import { get, push, ref, set } from "firebase/database";
 
 const Register = ({ user, setUser, loginUser }) => {
   const [form, setForm] = useState({
@@ -79,20 +79,12 @@ const Register = ({ user, setUser, loginUser }) => {
       const snapshot = await get(dbRef);
       if (snapshot.exists()) {
         const users = snapshot.val();
+        const emailInUse = Object.values(users).some(
+          (user) => user.email === form.email
+        );
 
-        const tempUsers = Object.keys(users)
-          .map((id) => {
-            return {
-              ...users[id],
-              id,
-            };
-          })
-          .filter((user) => {
-            return user.email === form.email;
-          });
-
-        if (tempUsers.length > 0) {
-          setAlert("The email address you entered is already in use. ");
+        if (emailInUse) {
+          setAlert("The email address you entered is already in use.");
           return;
         }
       }
@@ -122,26 +114,27 @@ const Register = ({ user, setUser, loginUser }) => {
   }
 
   return (
-    <Form onSubmit={onSubmit}>
+    <Form onSubmit={onSubmit} aria-label="User Registration Form">
       <div className="d-flex justify-content-around align-items-center vw-100 vh-100 register pt-5">
         <div>
           <img
             src="img/Register.png"
-            alt="Register"
+            alt="Illustration for registration process"
             className="register-image"
           />
         </div>
-        <Card className="shadow p-3 mb-5 bg-body rounded d-flex justify-content-center align-items-center register-card ">
+        <Card className="shadow p-3 mb-5 bg-body rounded d-flex justify-content-center align-items-center register-card">
           <Card.Title className="primary-color">Register</Card.Title>
 
           <br />
 
           {alert && (
             <Alert variant="danger" className="w-100 p-2">
-              <i
+              <em
                 className="fa-solid fa-triangle-exclamation me-2"
+                aria-hidden="true"
                 style={{ color: "red" }}
-              ></i>
+              ></em>
               {alert}
             </Alert>
           )}
@@ -154,6 +147,8 @@ const Register = ({ user, setUser, loginUser }) => {
               className="border-0 border-bottom border-2 rounded-0 p-0"
               value={form.username}
               onChange={onChange}
+              aria-required="true"
+              aria-label="Enter your user name"
             />
           </Form.Group>
 
@@ -165,6 +160,8 @@ const Register = ({ user, setUser, loginUser }) => {
               className="border-0 border-bottom border-2 rounded-0 p-0"
               value={form.email}
               onChange={onChange}
+              aria-required="true"
+              aria-label="Enter your email address"
             />
           </Form.Group>
 
@@ -176,30 +173,38 @@ const Register = ({ user, setUser, loginUser }) => {
               className="border-0 border-bottom border-2 rounded-0 p-0"
               value={form.dateOfBirth}
               onChange={onChange}
+              aria-required="true"
+              aria-label="Enter your date of birth"
             />
           </Form.Group>
 
-          <div className="d-flex justify-content-between my-2 w-75">
-            <Form.Check
-              type="radio"
-              id="Mentor"
-              name="role"
-              value="Mentor"
-              checked={form.role === "Mentor"}
-              onChange={onRoleChange}
-              label="Mentor"
-            />
+          <fieldset className="my-2 w-75">
+            <legend className="form-label">Role</legend>
+            <div className="d-flex justify-content-between">
+              <Form.Check
+                type="radio"
+                id="Mentor"
+                name="role"
+                value="Mentor"
+                checked={form.role === "Mentor"}
+                onChange={onRoleChange}
+                label="Mentor"
+                aria-required="true"
+                aria-label="Select Mentor as role"
+              />
 
-            <Form.Check
-              type="radio"
-              id="Mentee"
-              name="role"
-              value="Mentee"
-              checked={form.role === "Mentee"}
-              onChange={onRoleChange}
-              label="Mentee"
-            />
-          </div>
+              <Form.Check
+                type="radio"
+                id="Mentee"
+                name="role"
+                value="Mentee"
+                checked={form.role === "Mentee"}
+                onChange={onRoleChange}
+                label="Mentee"
+                aria-label="Select Mentee as role"
+              />
+            </div>
+          </fieldset>
 
           <Form.Group className="my-2 w-75" controlId="password">
             <Form.Label>Password</Form.Label>
@@ -209,6 +214,8 @@ const Register = ({ user, setUser, loginUser }) => {
               className="border-0 border-bottom border-2 rounded-0 p-0"
               value={form.password}
               onChange={onChange}
+              aria-required="true"
+              aria-label="Enter your password"
             />
           </Form.Group>
 
@@ -220,6 +227,8 @@ const Register = ({ user, setUser, loginUser }) => {
               className="border-0 border-bottom border-2 rounded-0 p-0"
               value={form.confirmPassword}
               onChange={onChange}
+              aria-required="true"
+              aria-label="Confirm your password"
             />
           </Form.Group>
 
@@ -229,11 +238,16 @@ const Register = ({ user, setUser, loginUser }) => {
             variant="primary"
             className="bg-primary border-0 w-50"
             type="submit"
+            aria-label="Submit Registration Form"
           >
             Signup
           </Button>
 
-          <Card.Link href="/login" className="primary-color my-2">
+          <Card.Link
+            href="/login"
+            className="primary-color my-2"
+            aria-label="Link to login page"
+          >
             Have an account? Login here!
           </Card.Link>
         </Card>

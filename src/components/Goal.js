@@ -218,43 +218,47 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
             <div>
               <Button
                 variant="link"
-                className="me-2"
+                className="me-2 text-decoration-none text-warning"
                 onClick={() => {
                   handleEditGoalClick(goal);
                 }}
               >
-                <i className="fa fa-pencil"></i>
+                Edit
+                <em className="fa fa-pencil"></em>
               </Button>
               <Button
                 variant="link"
-                className="text-danger"
+                className="text-decoration-none text-warning"
                 onClick={() => {
                   handleDeleteGoalClick(goal);
                 }}
               >
-                <i className="fa fa-trash"></i>
+                Delete
+                <em className="fa fa-trash"></em>
               </Button>
             </div>
           )}
         </Card.Header>
         <Card.Body>
           <p>
-            <b>Description</b>: {goal.description}
+            <strong>Description</strong>: {goal.description}
           </p>
           <p>
-            <b>Progress</b>: {goal.progress} / 100
+            <strong>Progress</strong>: {goal.progress} / 100
           </p>
           <p>
-            <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
+            <strong>Status</strong>:{" "}
+            {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
-            <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
+            <strong>Status</strong>:{" "}
+            {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
-            <b>Mentor</b>: {mentorName}
+            <strong>Mentor</strong>: {mentorName}
           </p>
           <p>
-            <b>Mentee</b>: {menteeName}
+            <strong>Mentee</strong>: {menteeName}
           </p>
 
           {goal.completed && (
@@ -268,7 +272,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
           )}
 
           <p>
-            <b>Comments</b>:
+            <strong>Comments</strong>:
           </p>
 
           <Form onSubmit={addComment}>
@@ -316,7 +320,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
               className="cursor-pointer fs-6"
               onClick={handleAddNewTodoClick}
             >
-              <i className="fa-solid fa-circle-plus"></i>
+              <em className="fa-solid fa-circle-plus"></em>
             </div>
           </div>
         </Card.Header>
@@ -328,33 +332,39 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                 className="todo-item my-2 bg-primary px-4 py-1 d-flex justify-content-between align-items-center"
               >
                 <div className="d-flex align-items-center">
-                  <Form.Check
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => handleToggleTodo(index)}
-                  />
+                  <Form.Group controlId={`todoStatus${index}`}>
+                    <Form.Label htmlFor={`todoStatus${index}`}>
+                      Status
+                    </Form.Label>
+                    <Form.Check
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() => handleToggleTodo(index)}
+                      id={`todoStatus${index}`}
+                    />
+                  </Form.Group>
                   <p
                     className={`m-0 ms-2 todo-${
                       todo.completed ? "completed" : "pending"
                     }`}
                   >
-                    <b>Title:</b> {todo.title}
+                    <strong>Title:</strong> {todo.title}
                   </p>
                 </div>
                 <div>
                   <Button
                     variant="link"
-                    className="text-primary"
+                    className="text-warning text-decoration-none"
                     onClick={() => handleEditTodo(todo, index)}
                   >
-                    Edit <i className="fa fa-pencil"></i>
+                    Edit <em className="fa fa-pencil"></em>
                   </Button>
                   <Button
                     variant="link"
-                    className="text-danger"
+                    className="text-warning text-decoration-none"
                     onClick={() => handleDeleteTodo(index)}
                   >
-                    Delete <i className="fa fa-trash"></i>
+                    Delete <em className="fa fa-trash"></em>
                   </Button>
                 </div>
               </div>

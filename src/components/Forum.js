@@ -153,7 +153,7 @@ const Forum = ({ user }) => {
                     <Button
                       variant="link"
                       onClick={() => toggleComments(post.id)}
-                      className="ms-2"
+                      className="ms-2 text-decoration-none text-white"
                     >
                       {showComments[post.id] ? "Hide" : "Show"} Comments
                     </Button>
@@ -189,7 +189,7 @@ const Forum = ({ user }) => {
                           <div key={idx} className="my-2">
                             <em className="fas fa-user-circle me-2"></em>
                             <span className="me-4">
-                              <b>{comment.name}</b>
+                              <strong>{comment.name}</strong>
                             </span>
                             <p>{comment.text}</p>
                           </div>

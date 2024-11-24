@@ -218,20 +218,22 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
             <div>
               <Button
                 variant="link"
-                className="me-2"
+                className="me-2 text-decoration-none text-warning"
                 onClick={() => {
                   handleEditGoalClick(goal);
                 }}
               >
+                Edit
                 <em className="fa fa-pencil"></em>
               </Button>
               <Button
                 variant="link"
-                className="text-danger"
+                className="text-decoration-none text-warning"
                 onClick={() => {
                   handleDeleteGoalClick(goal);
                 }}
               >
+                Delete
                 <em className="fa fa-trash"></em>
               </Button>
             </div>
@@ -239,22 +241,24 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
         </Card.Header>
         <Card.Body>
           <p>
-            <b>Description</b>: {goal.description}
+            <strong>Description</strong>: {goal.description}
           </p>
           <p>
-            <b>Progress</b>: {goal.progress} / 100
+            <strong>Progress</strong>: {goal.progress} / 100
           </p>
           <p>
-            <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
+            <strong>Status</strong>:{" "}
+            {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
-            <b>Status</b>: {goal.completed ? "Completed" : "In Progress"}
+            <strong>Status</strong>:{" "}
+            {goal.completed ? "Completed" : "In Progress"}
           </p>
           <p>
-            <b>Mentor</b>: {mentorName}
+            <strong>Mentor</strong>: {mentorName}
           </p>
           <p>
-            <b>Mentee</b>: {menteeName}
+            <strong>Mentee</strong>: {menteeName}
           </p>
 
           {goal.completed && (
@@ -268,7 +272,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
           )}
 
           <p>
-            <b>Comments</b>:
+            <strong>Comments</strong>:
           </p>
 
           <Form onSubmit={addComment}>
@@ -344,7 +348,7 @@ const ViewGoal = ({ user, goals, setGoals, loadGoals }) => {
                       todo.completed ? "completed" : "pending"
                     }`}
                   >
-                    <b>Title:</b> {todo.title}
+                    <strong>Title:</strong> {todo.title}
                   </p>
                 </div>
                 <div>

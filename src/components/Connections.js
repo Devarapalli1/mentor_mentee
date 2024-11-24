@@ -104,7 +104,7 @@ const Connections = ({ currUser }) => {
 
   return (
     <div className="connections">
-      <h3 className="mb-4">Your Connections</h3>
+      <h4 className="mb-4">Your Connections</h4>
 
       {/* Search bar */}
       <Form.Group>

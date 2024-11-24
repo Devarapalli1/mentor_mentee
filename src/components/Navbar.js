@@ -84,7 +84,19 @@ const NavBar = ({ user }) => {
                     e.preventDefault();
                   }}
                 >
+                  {/* Add label for accessibility */}
+                  <label
+                    htmlFor="search-input"
+                    className="visually-hidden"
+                    style={{ color: "#FFFFFF" }} // Ensures the label text is accessible
+                  >
+                    {user.role === "Mentor"
+                      ? "Search for Mentees"
+                      : "Search for Mentors with name or skill"}
+                  </label>
+
                   <Form.Control
+                    id="search-input" // Links the label with this input
                     type="search"
                     placeholder={
                       user.role === "Mentor"
@@ -99,11 +111,19 @@ const NavBar = ({ user }) => {
                     }
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      backgroundColor: "#005457", // Dark green background
+                      color: "#FFFFFF", // White text for high contrast
+                      border: "1px solid #FFFFFF", // Optional: border for focus visibility
+                    }}
                   />
+
                   <div className="d-flex justify-content-center align-items-center ms-2">
                     <em
                       className="fa-solid fa-magnifying-glass"
-                      style={{ color: "#FFFFFF" }}
+                      style={{
+                        color: "#FFFFFF", // Ensures contrast with the background
+                      }}
                     ></em>
                   </div>
                 </Form>
